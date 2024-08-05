@@ -1,0 +1,29 @@
+{
+    "name": "jeffreyvanrossum/paver",
+    "description": "Block based drag and drop editor for developers.",
+    "license": "MIT",
+    "authors": [
+      {
+        "name": "Jeffrey van Rossum",
+        "email": "jeffrey@vanrossum.dev"
+      }
+    ],
+    "require": {
+      "php": "^8.0|^8.1|^8.2"
+    },
+    "require-dev": {
+      "laravel/pint": "^1.4",
+      "spatie/ray": "^1.36"
+    },
+    "autoload": {
+      "psr-4": {
+        "Jeffreyvr\\Paver\\": "src"
+      },
+        "files": [
+            "src/helpers.php"
+        ]
+    },
+    "scripts": {
+      "format": "./vendor/bin/pint ./src/"
+    }
+  }

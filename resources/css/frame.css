@@ -1,0 +1,143 @@
+@import '_variables.css';
+@import '_animations.css';
+
+html, body {
+    min-height: 100%;
+    width: 100%;
+    display: flex;
+}
+
+.paver-editor-frame {
+    width: 100%;
+}
+
+.paver-sortable {
+    min-height: 50px;
+}
+
+/* body {
+    display: flex;
+    justify-content: center;
+} */
+
+.paver-editor-root {
+    min-height: 100%;
+}
+
+
+.paver-sortable-ghost {
+  text-indent: -9999px;
+  font-size: 0;
+  overflow: hidden;
+  line-height: 0;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  .paver-block-toolbar {
+    background: #ff0000;
+  }
+
+  > * {
+    display: none;
+  }
+
+  &:after {
+    content: "";
+    height: 3px;
+    border-radius: 2px;
+    background: var(--paver-color-primary);
+    animation: expandWidth 0.2s forwards, indictor 1s linear infinite;
+    display: block;
+  }
+}
+
+.handle:hover {
+  cursor: grab;
+}
+
+.paver-sortable-item {
+  position: relative;
+  box-sizing: border-box;
+}
+
+.paver-sortable-item.hover-block:not(.active-block) {
+    &::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        border: 1px solid transparent;
+        pointer-events: none;
+    }
+
+    &:hover::after {
+        border-color: rgba(3, 124, 186, .25);
+    }
+}
+
+.active-block {
+    &::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        border: 1px solid rgba(3, 124, 186);
+        pointer-events: none;
+    }
+}
+
+.paver-sortable-chosen {
+  background: #fff;
+}
+
+.paver-sortable-item.hover-block:not(.paver-sortable-chosen) > .paver-block-toolbar {
+  display: flex;
+}
+
+.paver-block-toolbar {
+  border: 1px solid #000;
+  border-radius: 3px;
+  display: none;
+  z-index: 100;
+
+  animation: fadeIn 0.2s ease-in-out;
+
+  position: absolute;
+  right: 5px;
+  top: 5px;
+  color: #000;
+
+  button:last-of-type {
+    border-right: none;
+    border-radius: 0 3px 3px 0;
+  }
+
+  button:first-of-type {
+    border-radius: 3px 0 0 3px;
+  }
+
+  button {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 10px;
+    height: 40px;
+    background-color: #f9f9f9;
+    border-right: 1px solid #000;
+
+    &:hover {
+      color: var(--paver-color-primary);
+    }
+
+    svg {
+      height: 18px;
+      width: 18px;
+    }
+  }
+}

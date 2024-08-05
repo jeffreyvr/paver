@@ -1,0 +1,27 @@
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes indictor {
+  0%,
+  100% {
+    opacity: 30%;
+  }
+  50% {
+    opacity: 100%;
+  }
+}
+
+@keyframes expandWidth {
+  from {
+    width: 50%;
+  }
+  to {
+    width: 90%;
+  }
+}
