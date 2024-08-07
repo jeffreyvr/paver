@@ -12,9 +12,9 @@ class Render extends Endpoint
 
         $blockInstance = BlockFactory::createById($block, $this->get('block')['data'], $this->get('block')['children'] ?? []);
 
-        $this->json(array(
+        $this->json([
             'data' => $blockInstance->data,
             'render' => $blockInstance->renderer('editor')->render(),
-        ));
+        ]);
     }
 }

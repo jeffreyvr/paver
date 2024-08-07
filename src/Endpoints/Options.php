@@ -7,7 +7,8 @@ use Jeffreyvr\Paver\Blocks\BlockFactory;
 class Options extends Endpoint
 {
     public function handle()
-    {   $block = $this->get('block')['block'];
+    {
+        $block = $this->get('block')['block'];
 
         $block = BlockFactory::createById($block);
         $block->data = array_merge($block->data, $this->get('block')['data']);
@@ -24,9 +25,9 @@ class Options extends Endpoint
         $html .= $block->renderOptions();
         $html .= '</div>';
 
-        $this->json(array(
+        $this->json([
             'name' => $block->name,
             'optionsHtml' => $html,
-        ));
+        ]);
     }
 }

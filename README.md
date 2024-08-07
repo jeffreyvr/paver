@@ -1,4 +1,4 @@
-<p align="center"><a href="https://vanrossum.dev" target="_blank"><img src="https://raw.githubusercontent.com/jeffreyvr/vanrossum.dev-art/main/logo.svg" width="320" alt="vanrossum.dev Logo"></a></p>
+<p align="center"><a href="https://vanrossum.dev" target="_blank"><img src="resources/svgs/logo.svg" width="320" alt="vanrossum.dev Logo"></a></p>
 
 <p align="center">
 <a href="https://packagist.org/packages/jeffreyvanrossum/paver"><img src="https://img.shields.io/packagist/dt/jeffreyvanrossum/paver" alt="Total Downloads"></a>

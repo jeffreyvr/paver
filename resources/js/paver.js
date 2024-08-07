@@ -1,16 +1,17 @@
 import tippy from 'tippy.js'
-import 'tippy.js/dist/tippy.css'
 import Alpine from 'alpinejs'
 import morph from '@alpinejs/morph'
 import helpers from './helpers.js'
 import Sortable from 'sortablejs'
 import History from './history.js'
 import ApiClient from './apiClient.js'
-
-window.Alpine = Alpine
-window.tippy = tippy
+import 'tippy.js/dist/tippy.css'
 
 Alpine.plugin(morph)
+
+window.Alpine = Alpine
+
+window.tippy = tippy
 
 window.Paver = function (data) {
     return {
@@ -23,6 +24,8 @@ window.Paver = function (data) {
         content: data.content,
 
         allowedBlocks: [],
+
+        expandBlockInserter: false,
 
         editingBlock: null,
 
@@ -39,6 +42,10 @@ window.Paver = function (data) {
         expanded: false,
 
         editing: false,
+
+        showExpandButton: data.showExpandButton ?? true,
+
+        showViewButton: data.showViewButton ?? true,
 
         log(...args) {
             if (!this.debug) {
@@ -93,7 +100,7 @@ window.Paver = function (data) {
         exitEditMode() {
             this.editing = false
 
-            this.frame.querySelectorAll('.active-block').forEach((el) => el.classList.remove('active-block'))
+            this.frame.querySelectorAll('.paver__active-block').forEach((el) => el.classList.remove('paver__active-block'))
 
             this.$nextTick(() => {
                 this.editingBlock = null
@@ -107,7 +114,7 @@ window.Paver = function (data) {
         toggleExpand() {
             this.expanded = !this.expanded
 
-            document.querySelector('body').classList.toggle('expanded-editor')
+            document.querySelector('body').classList.toggle('paver__expanded-editor')
         },
 
         blockChange(event) {
@@ -118,7 +125,7 @@ window.Paver = function (data) {
         determineAllowedBlocks() {
             this.allowedBlocks = []
 
-            this.root().querySelector('.active-block').querySelectorAll('.paver-sortable').forEach(element => {
+            this.root().querySelector('.paver__active-block').querySelectorAll('.paver__sortable').forEach(element => {
                 let elementAllowedBlocks = JSON.parse(element.getAttribute('data-allow-blocks'))
                 this.allowedBlocks = [...this.allowedBlocks, ...elementAllowedBlocks]
             })
@@ -133,10 +140,10 @@ window.Paver = function (data) {
 
             this.watchers()
 
-            Sortable.create(this.$refs.sidebar, {
-                ghostClass: "paver-sortable-ghost",
-                chosenClass: "paver-sortable-chosen",
-                dragClass: "paver-sortable-drag",
+            Sortable.create(this.$refs.blocksInserter, {
+                ghostClass: "paver__sortable-ghost",
+                chosenClass: "paver__sortable-chosen",
+                dragClass: "paver__sortable-drag",
                 group: {
                     name: 'shared',
                     pull: 'clone',
@@ -227,7 +234,7 @@ window.Paver = function (data) {
 
         watchers() {
             this.$watch('search', value => {
-                this.$refs.sidebar.querySelectorAll('.paver-sortable-item').forEach((el) => {
+                this.$refs.blocksInserter.querySelectorAll('.paver__sortable-item').forEach((el) => {
                     const blockName = el.getAttribute('data-block')
                     const isChildBlockOnly = el.hasAttribute('data-child-block-only')
 
@@ -262,10 +269,14 @@ window.Paver = function (data) {
 
                 helpers.dispatchToFrame(this.$refs.editor, 'updateEditingBlock', JSON.parse(JSON.stringify(value)))
             })
+
+            this.$watch('expandBlockInserter', value => {
+                document.querySelector('.paver__block-inserter-wrapper').classList.toggle('expanded', value)
+            })
         },
 
         root() {
-            return this.frame.querySelector('.paver-editor-root')
+            return this.frame.querySelector('.paver__editor-root')
         },
 
         waitForFrame() {
@@ -295,20 +306,26 @@ window.Paver = function (data) {
             this.record()
 
             Sortable.create(this.root(), {
-                ghostClass: "paver-sortable-ghost",
-                chosenClass: "paver-sortable-chosen",
-                dragClass: "paver-sortable-drag",
+                ghostClass: "paver__sortable-ghost",
+                chosenClass: "paver__sortable-chosen",
+                dragClass: "paver__sortable-drag",
                 group: {
                     name: 'shared',
-                    put: true
+                    put: (to, from, draggedElement) => {
+                        if (draggedElement.hasAttribute('data-child-block-only')) {
+                            return false
+                        }
+
+                        return true
+                    },
                 },
                 animation: 150,
-                handle: '.paver-block-handle',
+                handle: '.paver__block-handle',
                 onAdd: (evt) => this.fetchBlock(evt),
-                onEnd: (evt) => this.rebuildContent(),
+                onEnd: (evt) => this.rebuildContent()
             })
 
-            let nestedSortables = this.root().querySelectorAll('.paver-sortable')
+            let nestedSortables = this.root().querySelectorAll('.paver__sortable')
 
             nestedSortables.forEach(element => {
                 this.initNestedSoratable(element)
@@ -321,9 +338,9 @@ window.Paver = function (data) {
 
         initNestedSoratable(element) {
             Sortable.create(element, {
-                ghostClass: "paver-sortable-ghost",
-                chosenClass: "paver-sortable-chosen",
-                dragClass: "paver-sortable-drag",
+                ghostClass: "paver__sortable-ghost",
+                chosenClass: "paver__sortable-chosen",
+                dragClass: "paver__sortable-drag",
                 group: {
                     name: 'nested',
                     pull: false,
@@ -340,7 +357,7 @@ window.Paver = function (data) {
                         return allowedBlocks.some(block => block.trim().toLowerCase() === draggedBlock)
                     }
                 },
-                handle: '.paver-block-handle',
+                handle: '.paver__block-handle',
                 direction: element.getAttribute('data-direction') || 'vertical',
                 animation: 150,
                 onAdd: (evt) => this.fetchBlock(evt),
@@ -349,43 +366,58 @@ window.Paver = function (data) {
         },
 
         frameHeightManager() {
-            const iframeBody = this.$refs.editor.contentDocument.body
+            const iframeBodyHeight = this.$refs.editor.contentWindow.document.body.scrollHeight;
 
-            const ro = new ResizeObserver(() => {
-                this.$refs.editor.style.height = `${iframeBody.scrollHeight}px`
+            document.querySelector('iframe').style.height = iframeBodyHeight + 'px'
+
+            helpers.listenFromFrame('height', (height) => {
+                this.log('Setting editor height to', height);
+
+                this.$refs.editor.style.height = height + 'px'
             })
 
-            this.$nextTick(() => {
-                this.$refs.editor.style.height = `${iframeBody.scrollHeight}px`
-            })
+            // let lastHeight = iframeBody.scrollHeight;
 
-            ro.observe(iframeBody)
+            // const ro = new ResizeObserver(entries => {
+            //     for (let entry of entries) {
+            //         if (entry.target === iframeBody) {
+            //             const newHeight = iframeBody.scrollHeight;
+            //             if (newHeight !== lastHeight) {
+            //                 console.log('changing...');
+            //                 this.$refs.editor.style.height = `${newHeight}px`;
+            //                 lastHeight = newHeight;
+            //             }
+            //         }
+            //     }
+            // });
 
-            this.$watch('expanded', value => {
-                if (value) {
-                    ro.unobserve(iframeBody)
-                    this.$refs.editor.style.height = '100%'
-                } else {
-                    ro.observe(iframeBody)
-                    this.$refs.editor.style.height = `${iframeBody.scrollHeight}px`
-                }
-            })
+            // ro.observe(iframeBody)
+
+            // this.$watch('expanded', value => {
+            //     if (value) {
+            //         ro.unobserve(iframeBody)
+            //         this.$refs.editor.style.height = '100%'
+            //     } else {
+            //         ro.observe(iframeBody)
+            //         this.$refs.editor.style.height = `${iframeBody.scrollHeight}px`
+            //     }
+            // })
         },
 
         hoveringStates() {
             this.log('Applying hover states on blocks in editor')
 
             this.root().addEventListener('mouseover', (e) => {
-                const element = e.target.closest('.paver-sortable-item')
+                const element = e.target.closest('.paver__sortable-item')
                 if (element) {
-                    element.classList.add('hover-block')
+                    element.classList.add('paver__hover-block')
                 }
             })
 
             this.root().addEventListener('mouseout', (e) => {
-                const element = e.target.closest('.paver-sortable-item')
+                const element = e.target.closest('.paver__sortable-item')
                 if (element) {
-                    element.classList.remove('hover-block')
+                    element.classList.remove('paver__hover-block')
                 }
             })
 
@@ -395,13 +427,13 @@ window.Paver = function (data) {
             this.log('Rebuilding the content value')
 
             const gatherBlocks = (list) => {
-                let blocks = list.querySelectorAll(':scope > .paver-sortable-item')
+                let blocks = list.querySelectorAll(':scope > .paver__sortable-item')
                 let newBlocks = []
 
                 blocks.forEach(block => {
                     let blockData = JSON.parse(block.getAttribute('data-block'))
 
-                    let childList = block.querySelector('.paver-sortable')
+                    let childList = block.querySelector('.paver__sortable')
 
                     if (childList) {
                         blockData.children = gatherBlocks(childList)
@@ -426,13 +458,16 @@ window.Paver = function (data) {
             try {
                 const response = await this.api.fetchBlock(block, this.api.payload)
 
+                console.log(response);
+
                 evt.item.setAttribute('data-block', JSON.stringify({ block, data: response.data }))
+                evt.item.setAttribute('data-id', response.id)
 
                 Alpine.morph(evt.item, response.render)
 
                 this.hoveringStates()
 
-                evt.item.querySelectorAll('.paver-sortable').forEach(element => {
+                evt.item.querySelectorAll('.paver__sortable').forEach(element => {
                     this.log('Nested sortable found, initializing', element)
 
                     this.initNestedSoratable(element)
@@ -448,4 +483,8 @@ window.Paver = function (data) {
     }
 }
 
-Alpine.start()
+if(window.__paver_start_alpine) {
+    console.log('[PAVER] Starting Alpine.js')
+
+    Alpine.start()
+}

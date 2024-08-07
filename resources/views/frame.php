@@ -17,14 +17,14 @@ paver()->frame->activate();
 <body>
 
     <div
-        class="paver-editor-frame"
+        class="paver__editor-frame"
         x-data="PaverFrame({
             api: <?php echo htmlspecialchars(json_encode(paver()->api()), ENT_QUOTES, 'UTF-8'); ?>,
         })"
         @keydown.window.escape="exit"
         @keydown.window="revert"
         >
-        <div class="paver-editor-root paver-sortable">
+        <div class="paver__editor-root paver__sortable">
             <?php foreach ($blocks as $block) :
                 $_block = BlockFactory::createById($block['block'], $block['data'] ?? [], $block['children'] ?? []);
 
@@ -60,6 +60,8 @@ paver()->frame->activate();
     </script>
 
     <script>
+        window.__paver_start_alpine = <?php echo paver()->alpine ? 'true' : 'false'; ?>;
+
         <?php echo paver()->loadAssetContent('/js/frame.js'); ?>
     </script>
 </body>

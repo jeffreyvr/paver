@@ -1,18 +1,19 @@
-@import '_variables.css';
-@import '_animations.css';
+@import "_variables.css";
+@import "_animations.css";
 
-html, body {
-    min-height: 100%;
-    width: 100%;
-    display: flex;
+html,
+body {
+  /* min-height: 100%; */
+  width: 100%;
+  /* display: flex; */
 }
 
-.paver-editor-frame {
-    width: 100%;
+.editor-frame {
+  width: 100%;
 }
 
-.paver-sortable {
-    min-height: 50px;
+.sortable {
+  min-height: 50px;
 }
 
 /* body {
@@ -20,12 +21,11 @@ html, body {
     justify-content: center;
 } */
 
-.paver-editor-root {
-    min-height: 100%;
+.editor-root {
+  min-height: 300px;
 }
 
-
-.paver-sortable-ghost {
+.sortable-ghost {
   text-indent: -9999px;
   font-size: 0;
   overflow: hidden;
@@ -35,7 +35,7 @@ html, body {
   align-items: center;
   justify-content: center;
 
-  .paver-block-toolbar {
+  .block-toolbar {
     background: #ff0000;
   }
 
@@ -57,50 +57,54 @@ html, body {
   cursor: grab;
 }
 
-.paver-sortable-item {
+.sortable-item {
   position: relative;
   box-sizing: border-box;
 }
 
-.paver-sortable-item.hover-block:not(.active-block) {
-    &::after {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        border: 1px solid transparent;
-        pointer-events: none;
-    }
+.sortable-item.hover-block:not(.active-block) {
+  &::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    border: 1px solid transparent;
+    pointer-events: none;
+  }
 
-    &:hover::after {
-        border-color: rgba(3, 124, 186, .25);
-    }
+  &:hover::after {
+    border-color: rgba(3, 124, 186, 0.25);
+  }
 }
 
 .active-block {
-    &::after {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        border: 1px solid rgba(3, 124, 186);
-        pointer-events: none;
-    }
+  &::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    border: 1px solid rgba(3, 124, 186);
+    pointer-events: none;
+  }
 }
 
-.paver-sortable-chosen {
+.sortable-chosen {
   background: #fff;
 }
 
-.paver-sortable-item.hover-block:not(.paver-sortable-chosen) > .paver-block-toolbar {
+/* .sortable-item.hover-block:not(.sortable-chosen) > .block-toolbar {
+  display: flex;
+} */
+
+.sortable-item.hover-block > .block-toolbar {
   display: flex;
 }
 
-.paver-block-toolbar {
+.block-toolbar {
   border: 1px solid #000;
   border-radius: 3px;
   display: none;

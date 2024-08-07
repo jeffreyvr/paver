@@ -15,7 +15,7 @@ const helpers = {
         });
     },
 
-     log(...args) {
+    log(...args) {
         let type = 'log';
 
         if (typeof args[args.length - 1] === 'string' && ['log', 'info', 'warn', 'error'].includes(args[args.length - 1])) {

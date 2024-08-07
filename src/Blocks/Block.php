@@ -22,7 +22,7 @@ abstract class Block
         <path stroke-linecap="round" stroke-linejoin="round" d="M5.25 7.5A2.25 2.25 0 0 1 7.5 5.25h9a2.25 2.25 0 0 1 2.25 2.25v9a2.25 2.25 0 0 1-2.25 2.25h-9a2.25 2.25 0 0 1-2.25-2.25v-9Z" />
     </svg>';
 
-    public string|null $section = null;
+    public ?string $section = null;
 
     public function __construct()
     {
@@ -39,7 +39,7 @@ abstract class Block
         return $this->icon;
     }
 
-    function setData(array $data): self
+    public function setData(array $data): self
     {
         $this->data = $data;
 
@@ -102,7 +102,7 @@ abstract class Block
     {
         ob_start();
 
-        include paver()->viewPath() . '/block-toolbar.php';
+        include paver()->viewPath().'/block-toolbar.php';
 
         return ob_get_clean();
     }
@@ -126,6 +126,7 @@ abstract class Block
             foreach ($options as $option) {
                 $output .= $option;
             }
+
             return $output;
         }
 

@@ -31,6 +31,18 @@ window.PaverFrame = function (data) {
             this.$watch('blocks', (value) => {
                 helpers.dispatchToParent('blocks', JSON.parse(JSON.stringify(value)))
             })
+
+
+
+            const resizeObserver = new ResizeObserver(entries => {
+                for (let entry of entries) {
+                    if (entry.target === document.body) {
+                        helpers.dispatchToParent('height', document.body.scrollHeight)
+                    }
+                }
+            });
+
+            resizeObserver.observe(document.body)
         },
 
         exit() {
@@ -55,6 +67,8 @@ window.PaverFrame = function (data) {
             let target = e.currentTarget.parentNode.parentNode
             let block = target.getAttribute('data-id')
 
+            console.log(target, block)
+
             helpers.dispatchToParent('delete', JSON.parse(JSON.stringify(block)))
         },
 
@@ -69,11 +83,11 @@ window.PaverFrame = function (data) {
             let target = e.currentTarget.parentNode.parentNode
             let block = JSON.parse(target.getAttribute('data-block'))
 
-            document.querySelectorAll('.active-block').forEach((el) => {
-                el.classList.remove('active-block')
+            document.querySelectorAll('.paver__active-block').forEach((el) => {
+                el.classList.remove('paver__active-block')
             })
 
-            target.classList.add('active-block')
+            target.classList.add('paver__active-block')
 
             try {
                 const response = await this.api.fetchBlockOptions(block)
@@ -162,4 +176,8 @@ window.PaverFrame = function (data) {
     }
 }
 
-Alpine.start()
+if(window.__paver_start_alpine) {
+    console.log('[PAVER] Starting Alpine.js from frame')
+
+    Alpine.start()
+}

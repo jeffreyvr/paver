@@ -16,7 +16,7 @@ class Input extends Option
         ]);
 
         return <<<HTML
-            <div class="option">
+            <div class="paver__option">
                 <label>{$this->label}</label>
                 <input x-model="{$this->name}" {$attributeString}>
             </div>

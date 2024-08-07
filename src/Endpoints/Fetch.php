@@ -12,9 +12,10 @@ class Fetch extends Endpoint
 
         $block = BlockFactory::createById($block);
 
-        $this->json(array(
+        $this->json([
+            'id' => $block->getId(),
             'data' => $block->data,
             'render' => $block->renderer('editor')->render(),
-        ));
+        ]);
     }
 }

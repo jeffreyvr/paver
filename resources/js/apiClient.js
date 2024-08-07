@@ -17,7 +17,7 @@ export default class ApiClient {
                     'Content-Type': 'application/json',
                     ...this.headers,
                 },
-                body: JSON.stringify({ block, ...this.payload }),
+                body: JSON.stringify({ block, ...this.payload, ...payload }),
             })
 
             return await response.json()
@@ -36,7 +36,7 @@ export default class ApiClient {
                     'Content-Type': 'application/json',
                     ...this.headers,
                 },
-                body: JSON.stringify({ block, ...payload }),
+                body: JSON.stringify({ block, ...this.payload, ...payload }),
             })
 
             return await response.json()
@@ -55,7 +55,7 @@ export default class ApiClient {
                     'Content-Type': 'application/json',
                     ...this.headers,
                 },
-                body: JSON.stringify({ block, ...payload }),
+                body: JSON.stringify({ block, ...this.payload, ...payload }),
             })
 
             return await response.json()

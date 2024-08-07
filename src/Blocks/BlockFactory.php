@@ -8,11 +8,11 @@ class BlockFactory
     {
         $block = new $block;
 
-        if(! empty($data)) {
+        if (! empty($data)) {
             $block->setData($data);
         }
 
-        if(! empty($children)) {
+        if (! empty($children)) {
             $block->setChildren($children);
         }
 

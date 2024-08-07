@@ -5,7 +5,9 @@ namespace Jeffreyvr\Paver;
 class Frame
 {
     public string $headHtml = '';
+
     public string $footerHtml = '';
+
     public bool $active = false;
 
     public function activate()

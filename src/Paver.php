@@ -2,19 +2,15 @@
 
 namespace Jeffreyvr\Paver;
 
-use Jeffreyvr\Paver\Api;
-use Jeffreyvr\Paver\View;
-use Jeffreyvr\Paver\Frame;
-use Jeffreyvr\Paver\Editor;
 use Jeffreyvr\Paver\Blocks\BlockFactory;
 
 class Paver
 {
     private static $instance = null;
 
-    public string|array $viewPath = __DIR__ . '/../resources/views/';
+    public string|array $viewPath = __DIR__.'/../resources/views/';
 
-    public string|array $assetPath = __DIR__ . '/../assets/';
+    public string|array $assetPath = __DIR__.'/../assets/';
 
     public Editor $editor;
 
@@ -24,53 +20,62 @@ class Paver
 
     public array $blocks = [];
 
-    static function instance()
+    public bool $alpine = true;
+
+    public static function instance()
     {
         if (static::$instance === null) {
-            static::$instance = new static();
+            static::$instance = new static;
 
-            static::$instance->editor = new Editor();
-            static::$instance->frame = new Frame();
-            static::$instance->api = new Api();
+            static::$instance->editor = new Editor;
+            static::$instance->frame = new Frame;
+            static::$instance->api = new Api;
         }
 
         return static::$instance;
     }
 
-    function viewPath()
+    public function alpine($start)
+    {
+        $this->alpine = $start;
+
+        return $this;
+    }
+
+    public function viewPath()
     {
         return $this->viewPath;
     }
 
-    function assetPath()
+    public function assetPath()
     {
         return $this->assetPath;
     }
 
-    function loadAssetContent($path)
+    public function loadAssetContent($path)
     {
         $assetPaths = (array) $this->assetPath;
 
         foreach ($assetPaths as $assetPath) {
-            if (file_exists($assetPath . $path)) {
-                return file_get_contents($assetPath . $path);
+            if (file_exists($assetPath.$path)) {
+                return file_get_contents($assetPath.$path);
             }
         }
 
         throw new \Exception("Asset file {$path} not found.");
     }
 
-    function api()
+    public function api()
     {
         return $this->api;
     }
 
-    function blocks()
+    public function blocks()
     {
         return $this->blocks;
     }
 
-    function getBlock($name, $instance = false)
+    public function getBlock($name, $instance = false)
     {
         if (! isset($this->blocks[$name])) {
             throw new \Exception("Block {$name} not found.");
@@ -81,24 +86,28 @@ class Paver
             : $this->blocks[$name];
     }
 
-    function registerBlock($class)
+    public function registerBlock($class)
     {
         $this->blocks[$class::$reference] = $class;
 
         return $this;
     }
 
-    function render(array|string $content = [])
+    public function render(array|string $content = [], array $data = [])
     {
-        if(is_string($content)) {
+        if (is_string($content)) {
             $content = json_decode($content, true);
         }
 
-        return new View(paver()->viewPath() . 'editor.php', [
+        $data = array_merge([
+            'config' => [],
             'content' => addslashes(json_encode($content)),
-            'editorHtml' => (new View(paver()->viewPath() . 'frame.php', [
-                'blocks' => $content
-            ]))->render()
-        ]);
+            'editorHtml' => (new View(paver()->viewPath().'frame.php', [
+                'blocks' => $content,
+                'api' => paver()->api(),
+            ]))->render(),
+        ], $data);
+
+        return new View(paver()->viewPath().'editor.php', $data);
     }
 }

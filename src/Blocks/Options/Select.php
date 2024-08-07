@@ -39,7 +39,7 @@ class Select extends Option
         $optionsHtml = $this->optionsHtml();
 
         return <<<HTML
-            <div class="option">
+            <div class="paver__option">
                 <label>{$this->label}</label>
                 <select x-model="{$this->name}" {$attributeString}>
                     {$optionsHtml}

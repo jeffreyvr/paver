@@ -21,13 +21,13 @@ class Renderer
 
     public function renderToolbar(): string
     {
-        if (!$this->isEditorContext()) {
+        if (! $this->isEditorContext()) {
             return '';
         }
 
         ob_start();
 
-        include paver()->viewPath() . '/block-toolbar.php';
+        include paver()->viewPath().'/block-toolbar.php';
 
         return ob_get_clean();
     }
@@ -59,19 +59,19 @@ class Renderer
                 $dataArray = json_decode($jsonString, true);
                 $attributes = $dataArray['attributes'] ?? [];
 
-                $attributes['class'] = 'paver-sortable ' . ($attributes['class'] ?? '');
+                $attributes['class'] = 'paver__sortable '.($attributes['class'] ?? '');
 
                 if (! empty($dataArray['allowBlocks'])) {
                     $attributes['data-allow-blocks'] = json_encode($dataArray['allowBlocks']);
                 }
 
                 $attributeString = implode(' ', array_map(function ($key) use ($attributes) {
-                    return $key . '="' . htmlspecialchars($attributes[$key]) . '"';
+                    return $key.'="'.htmlspecialchars($attributes[$key]).'"';
                 }, array_keys($attributes)));
 
                 $replacementContent = '<div '.$attributeString.'>'.$innerHtml.'</div>';
 
-                $html = preg_replace('/<!--\s*Paver::children\(' . preg_quote($jsonString, '/') . '\)\s*-->/', $replacementContent, $html, 1);
+                $html = preg_replace('/<!--\s*Paver::children\('.preg_quote($jsonString, '/').'\)\s*-->/', $replacementContent, $html, 1);
             }
         }
 
@@ -86,8 +86,8 @@ class Renderer
     public function render(): string
     {
         $attributeString = $this->isEditorContext()
-            ? 'class="' . $this->blockClassName() . ' paver-sortable-item parent" data-id="' . $this->block->getId() . '" data-block="' . htmlspecialchars($this->block->toJson(), ENT_QUOTES, 'UTF-8') . '"'
-            : 'class="' . $this->blockClassName() . '"';
+            ? 'class="'.$this->blockClassName().' paver__sortable-item parent" data-id="'.$this->block->getId().'" data-block="'.htmlspecialchars($this->block->toJson(), ENT_QUOTES, 'UTF-8').'"'
+            : 'class="'.$this->blockClassName().'"';
 
         $content = '<div '.$attributeString.'>';
         $content .= $this->renderToolbar();

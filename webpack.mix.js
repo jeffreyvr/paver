@@ -11,6 +11,10 @@ mix.options({
         require('postcss-nested'),
         require("postcss-import"),
         require('postcss-css-variables'),
+        require('postcss-prefixer')({
+            prefix: 'paver__',
+            ignore: [/tippy/]
+        })
         // require('postcss-custom-properties')
     ]
 });
