@@ -64,7 +64,7 @@ window.Paver = function (data) {
         buttons: {
             expandButton: data.showExpandButton ?? true,
             viewButton: data.showViewButton ?? true,
-            saveButton: data.showSaveButton ?? true
+            saveButton: data.showSaveButton ?? false
         },
 
         allowRootDrop: false,

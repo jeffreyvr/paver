@@ -12,28 +12,6 @@ Paver Editor is a drag and drop based block editor (or page builder).
 
 For detailed instructions on how to use the editor, see the [documentation](https://paver-editor.com/docs).
 
-## FAQ
-
-### How do I save the editor content?
-
-The editor keeps a json version on the content in an hidden input named `paver_editor_content`. You have to implement your own way of that data.
-
-For the initial render of content, you can just pass the json (or array version) that was saved earlier.
-
-```php
-$paver->render($content);
-```
-
-### How do I render the content of the editor, outside the editor?
-
-So you have created something in the editor, and now you want to display it elsewhere.
-
-Simply:
-
-```php
-Renderer::blocks($content);
-```
-
 ## Contributors
 * [Jeffrey van Rossum](https://github.com/jeffreyvr)
 * [All contributors](https://github.com/jeffreyvr/paver/graphs/contributors)
