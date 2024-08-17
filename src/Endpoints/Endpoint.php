@@ -20,8 +20,10 @@ abstract class Endpoint
         return $this->request[$key] ?? $default;
     }
 
-    public function json($data)
+    public function json($data, $statusCode = 200)
     {
+        http_response_code($statusCode);
+
         header('Content-Type: application/json');
 
         echo json_encode($data);

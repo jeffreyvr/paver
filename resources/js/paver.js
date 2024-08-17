@@ -5,7 +5,11 @@ import helpers from './helpers.js'
 import Sortable from 'sortablejs'
 import History from './history.js'
 import ApiClient from './apiClient.js'
+import Shortcuts from './shortcuts.js'
+import Localization from './localization.js'
+import './alpine/tooltip.js'
 import 'tippy.js/dist/tippy.css'
+import './resizer.js'
 
 Alpine.plugin(morph)
 
@@ -13,8 +17,16 @@ window.Alpine = Alpine
 
 window.tippy = tippy
 
+window.Sortable = Sortable
+
 window.Paver = function (data) {
     return {
+        ...Localization,
+
+        locale: data.locale,
+
+        texts: data.texts,
+
         api: new ApiClient(data.api),
 
         view: data.view,
@@ -33,19 +45,29 @@ window.Paver = function (data) {
 
         frame: null,
 
-        search: '',
-
         history: History,
 
-        debug: true,
+        debug: data.debug ?? false,
 
         expanded: false,
 
         editing: false,
 
-        showExpandButton: data.showExpandButton ?? true,
+        loading: true,
 
-        showViewButton: data.showViewButton ?? true,
+        blockInserter: {
+            search: '',
+            showAll: false,
+            limit: data.blockInserterLimit ?? 6
+        },
+
+        buttons: {
+            expandButton: data.showExpandButton ?? true,
+            viewButton: data.showViewButton ?? true,
+            saveButton: data.showSaveButton ?? true
+        },
+
+        allowRootDrop: false,
 
         log(...args) {
             if (!this.debug) {
@@ -55,12 +77,8 @@ window.Paver = function (data) {
             helpers.log(...args)
         },
 
-        handleRevertShortcut(event) {
-            if (event.metaKey && event.key === 'z') {
-                event.preventDefault()
-
-                this.revert()
-            }
+        save() {
+            this.$dispatch('paver-save', {content: this.content})
         },
 
         revert() {
@@ -78,6 +96,10 @@ window.Paver = function (data) {
                 this.exitEditMode()
             } else {
                 this.editingBlock = last.editingBlock
+
+                if(last.componentSidebar) {
+                    this.$refs.componentSidebar.innerHTML = last.componentSidebar
+                }
             }
 
             Alpine.morph(this.root(), last.root)
@@ -133,12 +155,36 @@ window.Paver = function (data) {
             this.log('Blocks allowed in this block:', this.allowedBlocks)
         },
 
+        filteredBlocks() {
+            let filteredBlocks = this.blocks
+                .filter(i =>
+                    i.name.toLowerCase().startsWith(this.blockInserter.search.toLowerCase())
+                )
+                .filter(i =>
+                    this.allowedBlocks.length === 0 ||
+                    this.allowedBlocks.includes(i.reference)
+                )
+                .filter(i =>
+                    !i.childOnly || this.allowedBlocks.includes(i.reference)
+                );
+
+            if (!this.blockInserter.showAll) {
+                filteredBlocks = filteredBlocks.slice(0, 3);
+            }
+
+            return filteredBlocks;
+        },
+
         init() {
             this.waitForFrame()
 
             this.listeners()
 
             this.watchers()
+
+            Shortcuts.revert(() => this.revert())
+            Shortcuts.expand(() => this.toggleExpand())
+            Shortcuts.exit(() => this.handleEscape())
 
             Sortable.create(this.$refs.blocksInserter, {
                 ghostClass: "paver__sortable-ghost",
@@ -152,8 +198,8 @@ window.Paver = function (data) {
                 },
                 sort: false,
                 animation: 150,
-                onClone: function (/**Event*/evt) {
-                    evt.item.removeAttribute('x-show')
+                onStart: (evt) => {
+                    evt.clone.setAttribute('x-ignore', '')
                 },
             })
         },
@@ -164,6 +210,14 @@ window.Paver = function (data) {
             helpers.listenFromFrame('exit', (event) => this.handleEscape())
 
             helpers.listenFromFrame('revert', (event) => this.revert())
+
+            helpers.listenFromFrame('expand', (event) => this.toggleExpand())
+
+            helpers.listenFromFrame('loading', () => this.isLoading())
+            helpers.listenFromFrame('loaded', () => this.isLoaded())
+
+            document.addEventListener('loading', () => this.isLoading())
+            document.addEventListener('loaded', () => this.isLoaded())
 
             helpers.listenFromFrame('editingBlock', (event) => {
                 this.edited = false
@@ -179,7 +233,7 @@ window.Paver = function (data) {
                 this.determineAllowedBlocks()
 
                 this.$nextTick(() => {
-                    this.$refs.componentSidebar.innerHTML = event.html
+                    this.$refs.componentSidebar.querySelector('.paver__inside').innerHTML = event.html
                     this.edited = true
 
                     this.record()
@@ -233,27 +287,6 @@ window.Paver = function (data) {
         },
 
         watchers() {
-            this.$watch('search', value => {
-                this.$refs.blocksInserter.querySelectorAll('.paver__sortable-item').forEach((el) => {
-                    const blockName = el.getAttribute('data-block')
-                    const isChildBlockOnly = el.hasAttribute('data-child-block-only')
-
-                    let shouldDisplay = false
-                    if (this.allowedBlocks.length > 0) {
-                        shouldDisplay = this.allowedBlocks.includes(blockName)
-                    } else {
-                        shouldDisplay = !isChildBlockOnly
-                    }
-
-                    if (shouldDisplay && el.innerText.toLowerCase().includes(value.toLowerCase())) {
-                        el.style.display = 'flex'
-                    } else {
-                        el.style.display = 'none'
-                    }
-                })
-
-            })
-
             this.$watch('editingBlock', value => {
                 if (value === null) {
                     this.allowedBlocks = []
@@ -289,21 +322,35 @@ window.Paver = function (data) {
                     clearInterval(interval)
 
                     this.frameInit()
+
+                    this.loading = false
                 }
             }, 100)
         },
 
         record() {
-            this.history.add({
+            let record = {
                 root: this.root().outerHTML,
-                editingBlock: JSON.parse(JSON.stringify(this.editingBlock))
-            })
+                editingBlock: JSON.parse(JSON.stringify(this.editingBlock)),
+            }
+
+            if(this.$refs.componentSidebar) {
+                record.componentSidebar = this.$refs.componentSidebar.innerHTML
+            }
+
+            this.history.add(record)
 
             this.log('Recorded entry in history', this.history)
         },
 
         frameInit() {
             this.record()
+
+            // `allowRootDrop` is a dirty hack as Sortable does not recognize it
+            // when an item is first dragged over the frame and then dragged
+            // out of it; it will still add the item on 'dragend' - yuck.
+            this.root().addEventListener("dragenter", () => this.allowRootDrop = true)
+            document.querySelector('body').addEventListener("dragenter", () => this.allowRootDrop = false)
 
             Sortable.create(this.root(), {
                 ghostClass: "paver__sortable-ghost",
@@ -321,8 +368,15 @@ window.Paver = function (data) {
                 },
                 animation: 150,
                 handle: '.paver__block-handle',
-                onAdd: (evt) => this.fetchBlock(evt),
-                onEnd: (evt) => this.rebuildContent()
+                onAdd: (evt) => {
+                    if(! this.allowRootDrop) {
+                        evt.item.remove()
+                    } else {
+                        evt.item.innerHTML = ''
+                        this.fetchBlock(evt)
+                    }
+                },
+                onEnd: () => this.rebuildContent()
             })
 
             let nestedSortables = this.root().querySelectorAll('.paver__sortable')
@@ -332,6 +386,8 @@ window.Paver = function (data) {
             })
 
             this.hoveringStates()
+
+            this.linkClickWarnings()
 
             this.frameHeightManager()
         },
@@ -375,33 +431,6 @@ window.Paver = function (data) {
 
                 this.$refs.editor.style.height = height + 'px'
             })
-
-            // let lastHeight = iframeBody.scrollHeight;
-
-            // const ro = new ResizeObserver(entries => {
-            //     for (let entry of entries) {
-            //         if (entry.target === iframeBody) {
-            //             const newHeight = iframeBody.scrollHeight;
-            //             if (newHeight !== lastHeight) {
-            //                 console.log('changing...');
-            //                 this.$refs.editor.style.height = `${newHeight}px`;
-            //                 lastHeight = newHeight;
-            //             }
-            //         }
-            //     }
-            // });
-
-            // ro.observe(iframeBody)
-
-            // this.$watch('expanded', value => {
-            //     if (value) {
-            //         ro.unobserve(iframeBody)
-            //         this.$refs.editor.style.height = '100%'
-            //     } else {
-            //         ro.observe(iframeBody)
-            //         this.$refs.editor.style.height = `${iframeBody.scrollHeight}px`
-            //     }
-            // })
         },
 
         hoveringStates() {
@@ -420,7 +449,25 @@ window.Paver = function (data) {
                     element.classList.remove('paver__hover-block')
                 }
             })
+        },
 
+        linkClickWarnings() {
+            let warning = (e) => {
+                e.preventDefault()
+
+                var proceed = confirm(this.text('Do you really want to follow this link?'))
+
+                if (proceed) {
+                    window.open(link.href, '_blank')
+                }
+
+                return
+            }
+
+            this.root().querySelectorAll('a').forEach((link) => {
+                link.removeEventListener('click', warning)
+                link.addEventListener('click', warning)
+            })
         },
 
         rebuildContent() {
@@ -450,6 +497,17 @@ window.Paver = function (data) {
             this.content = JSON.stringify(newBlocks)
 
             this.hoveringStates()
+            this.linkClickWarnings()
+        },
+
+        isLoading() {
+            this.loading = true
+        },
+
+        isLoaded() {
+            setTimeout(() => {
+                this.loading = false
+            }, 100);
         },
 
         async fetchBlock(evt) {
@@ -458,14 +516,17 @@ window.Paver = function (data) {
             try {
                 const response = await this.api.fetchBlock(block, this.api.payload)
 
-                console.log(response);
-
                 evt.item.setAttribute('data-block', JSON.stringify({ block, data: response.data }))
                 evt.item.setAttribute('data-id', response.id)
 
-                Alpine.morph(evt.item, response.render)
+                // Alpine.morph(evt.item, response.render)
+
+                const newElement = document.createElement('div')
+                newElement.innerHTML = response.render
+                evt.item.outerHTML = newElement.innerHTML
 
                 this.hoveringStates()
+                this.linkClickWarnings()
 
                 evt.item.querySelectorAll('.paver__sortable').forEach(element => {
                     this.log('Nested sortable found, initializing', element)

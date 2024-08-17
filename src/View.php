@@ -2,6 +2,7 @@
 
 namespace Jeffreyvr\Paver;
 
+#[\AllowDynamicProperties]
 class View
 {
     public function __construct(public string $path, public array $data = [])
@@ -12,6 +13,10 @@ class View
     public function render()
     {
         extract($this->data);
+
+        foreach ($this->data as $key => $value) {
+            $this->{$key} = $value;
+        }
 
         ob_start();
 

@@ -1,5 +1,9 @@
 :root {
     --paver-color-primary: #0891b2;
+    --paver-color-primary-light: #06b6d4;
     --paver-color-secondary: #155e75;
-    --paver-color-light: #e5e7eb;
+    --paver-color-light: #f1f5f9;
+    --paver-color-dark: #3C434A;
+    --paver-border-radius: 4px;
+    --paver-border-color: #e5e7eb;
   }

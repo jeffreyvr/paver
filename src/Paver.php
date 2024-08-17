@@ -12,6 +12,10 @@ class Paver
 
     public string|array $assetPath = __DIR__.'/../assets/';
 
+    public string|array $languagePath = __DIR__.'/../lang/';
+
+    public string $locale = 'en';
+
     public Editor $editor;
 
     public Frame $frame;
@@ -21,6 +25,8 @@ class Paver
     public array $blocks = [];
 
     public bool $alpine = true;
+
+    public bool $debug = false;
 
     public static function instance()
     {
@@ -35,9 +41,16 @@ class Paver
         return static::$instance;
     }
 
-    public function alpine($start)
+    public function debug($flag)
     {
-        $this->alpine = $start;
+        $this->debug = $flag;
+
+        return $this;
+    }
+
+    public function alpine($flag)
+    {
+        $this->alpine = $flag;
 
         return $this;
     }
@@ -65,6 +78,15 @@ class Paver
         throw new \Exception("Asset file {$path} not found.");
     }
 
+    public function getLocalizations()
+    {
+        if (file_exists($this->languagePath.$this->locale.'.json')) {
+            return json_decode(file_get_contents($this->languagePath.$this->locale.'.json'), true);
+        }
+
+        return [];
+    }
+
     public function api()
     {
         return $this->api;
@@ -73,6 +95,20 @@ class Paver
     public function blocks()
     {
         return $this->blocks;
+    }
+
+    public function blocksJson(): string
+    {
+        return json_encode(array_map(function ($block) {
+            $instance = BlockFactory::createById($block);
+
+            return [
+                'name' => $instance->name,
+                'reference' => $instance::$reference,
+                'icon' => $instance->getIcon(),
+                'childOnly' => $instance->childOnly,
+            ];
+        }, array_keys($this->blocks)));
     }
 
     public function getBlock($name, $instance = false)
@@ -100,7 +136,9 @@ class Paver
         }
 
         $data = array_merge([
-            'config' => [],
+            'config' => [
+                'debug' => $this->debug,
+            ],
             'content' => addslashes(json_encode($content)),
             'editorHtml' => (new View(paver()->viewPath().'frame.php', [
                 'blocks' => $content,

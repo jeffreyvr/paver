@@ -1,4 +1,5 @@
 <?php
+use Jeffreyvr\Paver\Blocks\Renderer;
 use Jeffreyvr\Paver\Blocks\BlockFactory;
 
 paver()->frame->activate();
@@ -20,16 +21,12 @@ paver()->frame->activate();
         class="paver__editor-frame"
         x-data="PaverFrame({
             api: <?php echo htmlspecialchars(json_encode(paver()->api()), ENT_QUOTES, 'UTF-8'); ?>,
+            locale: '<?php echo paver()->locale; ?>',
+            texts: <?php echo htmlspecialchars(json_encode(paver()->getLocalizations()), ENT_QUOTES, 'UTF-8'); ?>,
         })"
-        @keydown.window.escape="exit"
-        @keydown.window="revert"
         >
         <div class="paver__editor-root paver__sortable">
-            <?php foreach ($blocks as $block) :
-                $_block = BlockFactory::createById($block['block'], $block['data'] ?? [], $block['children'] ?? []);
-
-                echo $_block->renderer('editor')->render();
-            endforeach; ?>
+            <?php echo Renderer::blocks($blocks, 'editor'); ?>
         </div>
     </div>
 
@@ -40,22 +37,6 @@ paver()->frame->activate();
             Alpine.data('PaverFrame', (data) => (
                 window.PaverFrame(data)
             ));
-
-            Alpine.magic('tooltip', el => message => {
-                let instance = tippy(el, { content: message, trigger: 'manual' })
-
-                instance.show()
-
-                setTimeout(() => {
-                    instance.hide()
-
-                    setTimeout(() => instance.destroy(), 150)
-                }, 2000)
-            })
-
-            Alpine.directive('tooltip', (el, { expression }) => {
-                tippy(el, { content: expression })
-            })
         });
     </script>
 

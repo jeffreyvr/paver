@@ -1,5 +1,7 @@
 @import "_variables.css";
 @import "_animations.css";
+@import "_utilities.css";
+@import "_toolbar.css";
 
 html,
 body {
@@ -34,10 +36,6 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-
-  .block-toolbar {
-    background: #ff0000;
-  }
 
   > * {
     display: none;
@@ -99,49 +97,3 @@ body {
 /* .sortable-item.hover-block:not(.sortable-chosen) > .block-toolbar {
   display: flex;
 } */
-
-.sortable-item.hover-block > .block-toolbar {
-  display: flex;
-}
-
-.block-toolbar {
-  border: 1px solid #000;
-  border-radius: 3px;
-  display: none;
-  z-index: 100;
-
-  animation: fadeIn 0.2s ease-in-out;
-
-  position: absolute;
-  right: 5px;
-  top: 5px;
-  color: #000;
-
-  button:last-of-type {
-    border-right: none;
-    border-radius: 0 3px 3px 0;
-  }
-
-  button:first-of-type {
-    border-radius: 3px 0 0 3px;
-  }
-
-  button {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0 10px;
-    height: 40px;
-    background-color: #f9f9f9;
-    border-right: 1px solid #000;
-
-    &:hover {
-      color: var(--paver-color-primary);
-    }
-
-    svg {
-      height: 18px;
-      width: 18px;
-    }
-  }
-}

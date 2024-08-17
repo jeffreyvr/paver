@@ -89,6 +89,12 @@ Select::make('Alignment', 'align', [
 ])
 ```
 
+## Nesting
+
+```html
+<!-- Paver::children({"allowBlocks": ["your_block_prefix.text", "your_block_prefix.rich-text"]}) -->
+```
+
 ## Communication
 
 The editor expects you to set up a couple of (API) endpoints, so that it can fetch and render blocks. These endpoints need to return specific data.

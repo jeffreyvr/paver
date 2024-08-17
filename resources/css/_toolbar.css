@@ -1,0 +1,51 @@
+.sortable-item.hover-block > .block-toolbar {
+  display: flex;
+}
+
+.block-toolbar {
+  border: 1px solid #000;
+  border-radius: 3px;
+  display: none;
+  z-index: 100;
+
+  animation: fadeIn 0.2s ease-in-out;
+
+  position: absolute;
+  right: 5px;
+  top: 5px;
+  color: #000;
+
+  button:last-of-type {
+    border-right: none;
+    border-radius: 0 3px 3px 0;
+  }
+
+  button:first-of-type {
+    border-radius: 3px 0 0 3px;
+  }
+
+  button {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 7px;
+    height: 30px;
+    background-color: #f9f9f9;
+    border-right: 1px solid #000;
+
+    &:hover {
+      color: var(--paver-color-primary);
+    }
+
+    svg {
+      height: 14px;
+      width: 14px;
+    }
+  }
+}
+
+.sortable-ghost {
+  .block-toolbar {
+    background: #ff0000;
+  }
+}

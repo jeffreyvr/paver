@@ -2,6 +2,8 @@
 
 namespace Jeffreyvr\Paver\Blocks;
 
+use Jeffreyvr\Paver\Blocks\Options\Option;
+
 abstract class Block
 {
     public string $name = 'Block';
@@ -84,14 +86,14 @@ abstract class Block
         return md5(uniqid(rand(), true));
     }
 
-    public function script($handle, $src, $deps)
+    public function script($handle, $src, $deps = [])
     {
         $this->scripts[] = compact('handle', 'src', 'deps');
 
         return $this;
     }
 
-    public function style($handle, $src, $deps)
+    public function style($handle, $src, $deps = [])
     {
         $this->styles[] = compact('handle', 'src', 'deps');
 
@@ -109,12 +111,12 @@ abstract class Block
 
     public function render()
     {
-        return '';
+        return '<!-- Block has no content -->';
     }
 
     public function options()
     {
-        return '';
+        return 'This block has no options.';
     }
 
     public function renderOptions()
@@ -124,7 +126,11 @@ abstract class Block
         if (is_array($options)) {
             $output = '';
             foreach ($options as $option) {
-                $output .= $option;
+                if ($option instanceof Option) {
+                    $output .= $option;
+                } else {
+                    $output .= $option;
+                }
             }
 
             return $output;
@@ -133,12 +139,18 @@ abstract class Block
         return $options;
     }
 
-    public function toJson(): string
+    public function toJson($include = ['block', 'children', 'data']): string
     {
-        return json_encode([
+        $object = [
             'block' => static::$reference,
             'children' => $this->children,
             'data' => $this->data,
-        ]);
+            'childOnly' => $this->childOnly,
+            'icon' => $this->icon,
+        ];
+
+        $object = array_intersect_key($object, array_flip($include));
+
+        return json_encode($object);
     }
 }

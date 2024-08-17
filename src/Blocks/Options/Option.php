@@ -6,10 +6,9 @@ abstract class Option
 {
     public array $attributes = [];
 
-    public static function make(...$args): string
+    public static function make(...$args)
     {
-        return (new static(...$args))
-            ->render();
+        return new static(...$args);
     }
 
     public function render()
@@ -26,5 +25,10 @@ abstract class Option
         }
 
         return $attributeString;
+    }
+
+    public function __toString()
+    {
+        return $this->render();
     }
 }

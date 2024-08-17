@@ -1,0 +1,23 @@
+.bg-light {
+    background-color: var(--paver-color-light);
+}
+
+.bg-white {
+    background-color: #fff;
+}
+
+.cursor-grab {
+   cursor: grab;
+}
+
+.hidden {
+    display: none;
+}
+
+.flex {
+    display: flex;
+}
+
+.items-center {
+    align-items: center;
+}

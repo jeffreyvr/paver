@@ -36,6 +36,11 @@ class Renderer
     {
         $output = '';
 
+        if (empty($this->block->children)) {
+            return $output;
+        }
+        // ray($this->block->children)->purple();
+
         $originalBlock = $this->block;
 
         foreach ($this->block->children as $childBlock) {
@@ -102,7 +107,7 @@ class Renderer
         return (new static($block, $context))->render();
     }
 
-    public static function blocks($blocks): string
+    public static function blocks($blocks, $context = 'front-end'): string
     {
         if (is_string($blocks)) {
             $blocks = json_decode($blocks, true);
@@ -113,7 +118,7 @@ class Renderer
         foreach ($blocks as $block) {
             $_block = BlockFactory::createById($block['block'], $block['data'] ?? [], $block['children'] ?? []);
 
-            $content .= $_block->renderer('front-end')->render();
+            $content .= $_block->renderer($context)->render();
         }
 
         return $content;
