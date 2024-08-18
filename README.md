@@ -10,7 +10,7 @@
 
 Paver Editor is a drag and drop based block editor (or page builder).
 
-For detailed instructions on how to use the editor, see the [documentation](https://paver-editor.com/docs).
+For detailed instructions on how to use the editor, see the [documentation](https://pavereditor.com/docs).
 
 ## Contributors
 * [Jeffrey van Rossum](https://github.com/jeffreyvr)
