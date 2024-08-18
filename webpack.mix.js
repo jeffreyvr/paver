@@ -10,13 +10,11 @@ mix.options({
     postCss: [
         require('postcss-nested'),
         require("postcss-import"),
-        // require('postcss-css-variables'),
         require('postcss-prefixer')({
             prefix: 'paver__',
             ignore: [/tippy/]
         })
-        // require('postcss-custom-properties')
     ]
 });
 
-mix.sourceMaps();
+// mix.sourceMaps();

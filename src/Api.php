@@ -14,6 +14,13 @@ class Api
 
     public array $headers = [];
 
+    public function setEndpoint($name, $endpoint)
+    {
+        $this->endpoints[$name] = $endpoint;
+
+        return $this;
+    }
+
     public function setEndpoints($endpoints)
     {
         $this->endpoints = $endpoints;
@@ -26,6 +33,11 @@ class Api
         $this->payload = $payload;
 
         return $this;
+    }
+
+    public function setHeader($header, $value)
+    {
+        $this->headers[$header] = $value;
     }
 
     public function setHeaders($headers)

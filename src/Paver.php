@@ -129,22 +129,26 @@ class Paver
         return $this;
     }
 
-    public function render(array|string $content = [], array $data = [])
+    public function render(array|string|null $content = null, array $config = [])
     {
-        if (is_string($content)) {
+        if ($content === null) {
+            $content = [];
+        } elseif (is_string($content)) {
             $content = json_decode($content, true);
         }
 
-        $data = array_merge([
-            'config' => [
-                'debug' => $this->debug,
-            ],
+        $data = [
             'content' => addslashes(json_encode($content)),
+
             'editorHtml' => (new View(paver()->viewPath().'frame.php', [
                 'blocks' => $content,
                 'api' => paver()->api(),
             ]))->render(),
-        ], $data);
+
+            'config' => array_merge([
+                'debug' => $this->debug,
+            ], $config),
+        ];
 
         return new View(paver()->viewPath().'editor.php', $data);
     }
