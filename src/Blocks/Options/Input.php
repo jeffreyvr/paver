@@ -11,9 +11,9 @@ class Input extends Option
 
     public function render(): string
     {
-        $attributeString = $this->makeAttributeString([
+        $attributeString = $this->makeAttributeString([...[
             'type' => 'text',
-        ]);
+        ], ...$this->attributes]);
 
         return <<<HTML
             <div class="paver__option">
