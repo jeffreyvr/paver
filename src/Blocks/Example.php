@@ -6,6 +6,8 @@ use Jeffreyvr\Paver\Blocks\Options\Input;
 
 class Example extends Block
 {
+    public static string $reference = 'paver.example';
+
     public string $name = 'Example';
 
     public array $data = [
