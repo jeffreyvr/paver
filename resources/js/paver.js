@@ -148,7 +148,12 @@ window.Paver = function (data) {
             this.allowedBlocks = []
 
             this.root().querySelector('.paver__active-block').querySelectorAll('.paver__sortable').forEach(element => {
+                if(! element.hasAttribute('data-allow-blocks')) {
+                    return
+                }
+
                 let elementAllowedBlocks = JSON.parse(element.getAttribute('data-allow-blocks'))
+
                 this.allowedBlocks = [...this.allowedBlocks, ...elementAllowedBlocks]
             })
 
