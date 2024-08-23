@@ -137,6 +137,11 @@ class Paver
             $content = json_decode($content, true);
         }
 
+        foreach(paver()->blocks() as $block) {
+            BlockFactory::create($block)
+                ->beforeEditorRender();
+        }
+
         $data = [
             'content' => addslashes(json_encode($content)),
 

@@ -86,6 +86,11 @@ abstract class Block
         return md5(uniqid(rand(), true));
     }
 
+    public function beforeEditorRender()
+    {
+        // Do something before the editor is rendered
+    }
+
     public function script($handle, $src, $deps = [])
     {
         $this->scripts[] = compact('handle', 'src', 'deps');
