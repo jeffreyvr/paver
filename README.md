@@ -12,6 +12,11 @@ Paver Editor is a drag and drop based block editor (or page builder).
 
 For detailed instructions on how to use the editor, see the [documentation](https://pavereditor.com/docs).
 
+## Related packages
+
+* [Paver for WordPress](https://github.com/jeffreyvr/paver-for-wordpress)
+* [Paver for Laravel](https://github.com/jeffreyvr/paver-for-laravel)
+
 ## Contributors
 * [Jeffrey van Rossum](https://github.com/jeffreyvr)
 * [All contributors](https://github.com/jeffreyvr/paver/graphs/contributors)
