@@ -21,7 +21,6 @@ paver()->frame->activate();
         class="paver__editor-frame"
         x-data="PaverFrame({
             api: <?php echo htmlspecialchars(json_encode(paver()->api()), ENT_QUOTES, 'UTF-8'); ?>,
-            locale: '<?php echo paver()->locale; ?>',
             texts: <?php echo htmlspecialchars(json_encode(paver()->getLocalizations()), ENT_QUOTES, 'UTF-8'); ?>,
         })"
         >

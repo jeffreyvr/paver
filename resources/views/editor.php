@@ -3,7 +3,6 @@
     x-cloak
     x-data="Paver({
         view: 'desktop',
-        locale: '<?php echo paver()->locale; ?>',
         texts: <?php echo htmlspecialchars(json_encode(paver()->getLocalizations()), ENT_QUOTES, 'UTF-8'); ?>,
         content: '<?php echo htmlspecialchars($content, ENT_QUOTES, 'UTF-8'); ?>',
         api: <?php echo htmlspecialchars(json_encode(paver()->api()), ENT_QUOTES, 'UTF-8'); ?>,
@@ -12,11 +11,11 @@
     })">
 
     <div>
-        <div class="paver__section" style="display: flex; justify-content: space-between; align-items: center;">
-            <div class="paver__section-header" style="border-bottom: 0;">
+        <div class="paver__section paver__section-main">
+            <div class="paver__section-header">
                 Editor
             </div>
-            <div style="padding: 0 12px; display: flex; gap: 4px; align-items: center;">
+            <div class="paver__editor-actions">
                 <div x-cloak :class="loading ? 'paver__flex paver__items-center' : 'paver__hidden'">
                     <svg class="paver__loading-spinner" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                         <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
@@ -110,7 +109,7 @@
         </div>
 
         <template x-if="editing">
-            <div class="paver__section" style="position: relative;">
+            <div class="paver__section">
 
                 <div class="paver__section-header">
                     <div x-text="editingBlock.name"></div>

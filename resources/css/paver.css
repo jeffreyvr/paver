@@ -161,6 +161,24 @@
 .section {
     border-bottom: 1px solid var(--paver-border-color);
     width: 100%;
+    position: relative;
+
+    .editor-actions {
+        padding: 0 12px;
+        display: flex;
+        gap: 4px;
+        align-items: center;
+    }
+
+    &.section-main {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+
+        .section-header {
+            border-bottom: 0;
+        }
+    }
 
     .section-header {
         display: flex;

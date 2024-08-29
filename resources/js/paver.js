@@ -23,8 +23,6 @@ window.Paver = function (data) {
     return {
         ...Localization,
 
-        locale: data.locale,
-
         texts: data.texts,
 
         api: new ApiClient(data.api),
