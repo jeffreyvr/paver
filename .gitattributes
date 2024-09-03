@@ -1,0 +1,9 @@
+/.github            export-ignore
+/.vscode            export-ignore
+/.editorconfig      export-ignore
+/.gitattributes     export-ignore
+/.gitignore         export-ignore
+/webpack.mix.js     export-ignore
+/cypress.config.js  export-ignore
+/mix-manifest.json  export-ignore
+/tests              export-ignore
