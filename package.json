@@ -15,13 +15,12 @@
   },
   "keywords": [],
   "author": "",
-  "license": "ISC",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/paver/paver/issues"
   },
   "homepage": "https://github.com/paver/paver#readme",
   "devDependencies": {
-    "@4tw/cypress-drag-drop": "^2.2.5",
     "cypress": "^13.14.1",
     "laravel-mix": "^6.0.49",
     "postcss": "^8.4.41",

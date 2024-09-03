@@ -22,10 +22,7 @@ $paver->registerBlock(Example::class);
 $content = [];
 
 if(isset($_GET['content'])) {
-    $content[] =
-        [
-            'block' => 'paver.example',
-        ];
+    $content[] = ['block' => 'paver.example'];
 }
 
 require 'endpoints.php';
