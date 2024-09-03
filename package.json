@@ -6,7 +6,7 @@
     "start-server": "php -S localhost:8000 -t ./tests/localhost",
     "stop-server": "lsof -t -i:8000 | xargs kill -9",
     "cypress:open": "cypress open",
-    "cypress:run": "cypress run",
+    "cypress:run": "cypress run --headless",
     "test": "npm run start-server & npm run cypress:run && npm run stop-server"
   },
   "repository": {
