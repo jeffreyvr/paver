@@ -11,7 +11,7 @@ class Example extends Block
     public string $name = 'Example';
 
     public array $data = [
-        'name' => '[your name here]'
+        'name' => '[your name here]',
     ];
 
     public function render()
@@ -24,7 +24,7 @@ class Example extends Block
     public function options()
     {
         return [
-            Input::make('Name', 'name')
+            Input::make('Name', 'name'),
         ];
     }
 }

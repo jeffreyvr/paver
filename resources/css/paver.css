@@ -95,7 +95,7 @@
 .container {
     display: flex;
     width: 100%;
-    overflow: auto;
+    overflow: clip;
 
     > div:not(.sidebar) {
         display: flex;
@@ -287,6 +287,9 @@
 @media (max-width: 768px) {
     .hide-on-mobile {
         display: none;
+    }
+    .container {
+        overflow: auto;
     }
 }
 
