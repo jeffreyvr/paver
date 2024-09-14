@@ -35,8 +35,6 @@ window.Paver = function (data) {
 
         allowedBlocks: [],
 
-        expandBlockInserter: false,
-
         editingBlock: null,
 
         edited: false,
@@ -56,7 +54,8 @@ window.Paver = function (data) {
         blockInserter: {
             search: '',
             showAll: false,
-            limit: data.blockInserterLimit ?? 6
+            limit: data.blockInserterLimit ?? 6,
+            showExpandButton: false
         },
 
         buttons: {
@@ -171,8 +170,14 @@ window.Paver = function (data) {
                     !i.childOnly || this.allowedBlocks.includes(i.reference)
                 );
 
+            if(filteredBlocks.length > this.blockInserter.limit) {
+                this.blockInserter.showExpandButton = true
+            } else {
+                this.blockInserter.showExpandButton = false
+            }
+
             if (!this.blockInserter.showAll) {
-                filteredBlocks = filteredBlocks.slice(0, 3);
+                filteredBlocks = filteredBlocks.slice(0, this.blockInserter.limit);
             }
 
             return filteredBlocks;
@@ -304,10 +309,6 @@ window.Paver = function (data) {
                 this.log('Updating editing block')
 
                 helpers.dispatchToFrame(this.$refs.editor, 'updateEditingBlock', JSON.parse(JSON.stringify(value)))
-            })
-
-            this.$watch('expandBlockInserter', value => {
-                document.querySelector('.paver__block-inserter-wrapper').classList.toggle('expanded', value)
             })
         },
 
@@ -515,27 +516,27 @@ window.Paver = function (data) {
 
         async fetchBlock(evt) {
             const block = evt.item.getAttribute('data-block')
-
             try {
                 const response = await this.api.fetchBlock(block, this.api.payload)
 
-                evt.item.setAttribute('data-block', JSON.stringify({ block, data: response.data }))
-                evt.item.setAttribute('data-id', response.id)
-
-                // Alpine.morph(evt.item, response.render)
-
                 const newElement = document.createElement('div')
                 newElement.innerHTML = response.render
+
+                newElement.firstElementChild.setAttribute('data-block', JSON.stringify({block, data: response.data}))
+                newElement.firstElementChild.setAttribute('data-id', response.id)
+
                 evt.item.outerHTML = newElement.innerHTML
 
-                this.hoveringStates()
-                this.linkClickWarnings()
+                let elementInRoot = this.root().querySelector('div[data-id="'+response.id+'"]')
 
-                evt.item.querySelectorAll('.paver__sortable').forEach(element => {
+                elementInRoot.querySelectorAll('.paver__sortable').forEach(element => {
                     this.log('Nested sortable found, initializing', element)
 
                     this.initNestedSoratable(element)
                 })
+
+                this.hoveringStates()
+                this.linkClickWarnings()
 
                 this.rebuildContent()
 
