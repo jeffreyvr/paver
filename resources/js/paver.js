@@ -328,6 +328,8 @@ window.Paver = function (data) {
                     this.frameInit()
 
                     this.loading = false
+
+                    this.$dispatch('paver-ready')
                 }
             }, 100)
         },
@@ -499,6 +501,7 @@ window.Paver = function (data) {
             let newBlocks = gatherBlocks(this.root())
 
             this.content = JSON.stringify(newBlocks)
+            this.$dispatch('paver-change', {content: this.content})
 
             this.hoveringStates()
             this.linkClickWarnings()
