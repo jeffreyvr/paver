@@ -157,36 +157,12 @@ window.Paver = function (data) {
             this.log('Blocks allowed in this block:', this.allowedBlocks)
         },
 
-        filteredBlocks() {
-            let filteredBlocks = this.blocks
-                .filter(i =>
-                    i.name.toLowerCase().startsWith(this.blockInserter.search.toLowerCase())
-                )
-                .filter(i =>
-                    this.allowedBlocks.length === 0 ||
-                    this.allowedBlocks.includes(i.reference)
-                )
-                .filter(i =>
-                    !i.childOnly || this.allowedBlocks.includes(i.reference)
-                );
-
-            if(filteredBlocks.length > this.blockInserter.limit) {
-                this.blockInserter.showExpandButton = true
-            } else {
-                this.blockInserter.showExpandButton = false
-            }
-
-            if (!this.blockInserter.showAll) {
-                filteredBlocks = filteredBlocks.slice(0, this.blockInserter.limit);
-            }
-
-            return filteredBlocks;
-        },
-
         init() {
             this.waitForFrame()
 
             this.listeners()
+
+            this.determineVisibleInsertableBlocks()
 
             this.watchers()
 
@@ -310,6 +286,49 @@ window.Paver = function (data) {
 
                 helpers.dispatchToFrame(this.$refs.editor, 'updateEditingBlock', JSON.parse(JSON.stringify(value)))
             })
+
+            this.$watch('blockInserter.search', () => {
+                this.determineVisibleInsertableBlocks()
+            })
+
+            this.$watch('blockInserter.limit', () => {
+                this.determineVisibleInsertableBlocks()
+            })
+
+            this.$watch('blockInserter.showAll', () => {
+                this.determineVisibleInsertableBlocks()
+            })
+
+            this.$watch('allowedBlocks', () => {
+                this.determineVisibleInsertableBlocks()
+            })
+        },
+
+
+        determineVisibleInsertableBlocks() {
+            const searchTerm = this.blockInserter.search.trim().toLowerCase()
+            const allowedBlocks = this.allowedBlocks.length ? this.allowedBlocks : null
+            const blocks = this.$refs.blocksInserter.querySelectorAll('.paver__block-handle')
+
+            let visibleCount = 0
+            let totalVisible = 0
+
+            blocks.forEach(block => {
+                const blockName = block.getAttribute('data-block').trim().toLowerCase()
+                const matchesSearch = !searchTerm || blockName.includes(searchTerm)
+                const isAllowed = !allowedBlocks || allowedBlocks.includes(blockName)
+                const withinLimit = this.blockInserter.showAll || visibleCount < this.blockInserter.limit
+
+                if (matchesSearch && isAllowed) {
+                    totalVisible++
+                    block.style.display = withinLimit ? 'flex' : 'none'
+                    if (withinLimit) visibleCount++
+                } else {
+                    block.style.display = 'none'
+                }
+            })
+
+            this.blockInserter.showExpandButton = totalVisible > this.blockInserter.limit
         },
 
         root() {
@@ -354,7 +373,7 @@ window.Paver = function (data) {
 
             // `allowRootDrop` is a dirty hack as Sortable does not recognize it
             // when an item is first dragged over the frame and then dragged
-            // out of it; it will still add the item on 'dragend' - yuck.
+            // out of it it will still add the item on 'dragend' - yuck.
             this.root().addEventListener("dragenter", () => this.allowRootDrop = true)
             document.querySelector('body').addEventListener("dragenter", () => this.allowRootDrop = false)
 
@@ -428,12 +447,12 @@ window.Paver = function (data) {
         },
 
         frameHeightManager() {
-            const iframeBodyHeight = this.$refs.editor.contentWindow.document.body.scrollHeight;
+            const iframeBodyHeight = this.$refs.editor.contentWindow.document.body.scrollHeight
 
             document.querySelector('iframe').style.height = iframeBodyHeight + 'px'
 
             helpers.listenFromFrame('height', (height) => {
-                this.log('Setting editor height to', height);
+                this.log('Setting editor height to', height)
 
                 this.$refs.editor.style.height = height + 'px'
             })
@@ -514,7 +533,7 @@ window.Paver = function (data) {
         isLoaded() {
             setTimeout(() => {
                 this.loading = false
-            }, 100);
+            }, 100)
         },
 
         async fetchBlock(evt) {

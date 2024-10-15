@@ -97,9 +97,9 @@ class Paver
         return $this->blocks;
     }
 
-    public function blocksJson(): string
+    public function blocksJson($encode = true): string|array
     {
-        return json_encode(array_map(function ($block) {
+        $blocks = array_map(function ($block) {
             $instance = BlockFactory::createById($block);
 
             return [
@@ -108,7 +108,9 @@ class Paver
                 'icon' => $instance->getIcon(),
                 'childOnly' => $instance->childOnly,
             ];
-        }, array_keys($this->blocks)));
+        }, array_keys($this->blocks));
+
+        return $encode ? json_encode($blocks) : $blocks;
     }
 
     public function getBlock($name, $instance = false)
