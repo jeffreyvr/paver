@@ -92,23 +92,26 @@ class Paver
         return $this->api;
     }
 
-    public function blocks()
+    public function blocks($encode = false, $withInstance = false): string|array
     {
-        return $this->blocks;
-    }
-
-    public function blocksJson(): string
-    {
-        return json_encode(array_map(function ($block) {
+        $blocks = array_map(function ($block) use($withInstance) {
             $instance = BlockFactory::createById($block);
 
-            return [
+            $data = [
                 'name' => $instance->name,
                 'reference' => $instance::$reference,
                 'icon' => $instance->getIcon(),
                 'childOnly' => $instance->childOnly,
             ];
-        }, array_keys($this->blocks)));
+
+            if($withInstance) {
+                $data['instance'] = $instance;
+            }
+
+            return $data;
+        }, array_keys($this->blocks));
+
+        return $encode ? json_encode($blocks) : $blocks;
     }
 
     public function getBlock($name, $instance = false)
@@ -137,9 +140,8 @@ class Paver
             $content = json_decode($content, true);
         }
 
-        foreach (paver()->blocks() as $block) {
-            BlockFactory::create($block)
-                ->beforeEditorRender();
+        foreach (paver()->blocks(withInstance: true) as $block) {
+            $block['instance']->beforeEditorRender();
         }
 
         $data = [

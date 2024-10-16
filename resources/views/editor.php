@@ -6,7 +6,7 @@
         texts: <?php echo htmlspecialchars(json_encode(paver()->getLocalizations()), ENT_QUOTES, 'UTF-8'); ?>,
         content: '<?php echo htmlspecialchars($content, ENT_QUOTES, 'UTF-8'); ?>',
         api: <?php echo htmlspecialchars(json_encode(paver()->api()), ENT_QUOTES, 'UTF-8'); ?>,
-        blocks: <?php echo htmlspecialchars(paver()->blocksJson()); ?>,
+        blocks: <?php echo htmlspecialchars(paver()->blocks(encode: true)); ?>,
         ...<?php echo htmlspecialchars(json_encode($config)); ?>
     })">
 
@@ -76,12 +76,12 @@
                         Whoops, we don't have any blocks (yet)!
                     </div>
                     <div x-ref="blocksInserter" class="paver__block-grid paver__sortable">
-                        <template x-for="(block, index) in filteredBlocks()" :key="index">
-                            <div class="paver__sortable-item paver__block-handle" :data-block="block.reference">
-                                <span x-html="block.icon"></span>
-                                <span x-text="block.name"></span>
+                        <?php foreach(paver()->blocks() as $block) : ?>
+                            <div class="paver__sortable-item paver__block-handle" data-block="<?php echo $block['reference']; ?>">
+                                <span><?php echo $block['icon']; ?></span>
+                                <span><?php echo $block['name']; ?></span>
                             </div>
-                        </template>
+                        <?php endforeach; ?>
                     </div>
                     <div x-show="blockInserter.showExpandButton">
                         <button type="button" class="paver__expand-btn" x-on:click="blockInserter.showAll = !blockInserter.showAll">

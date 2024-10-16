@@ -7,6 +7,7 @@
   border-radius: 3px;
   display: none;
   z-index: 100;
+  font-family: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
 
   animation: fadeIn 0.2s ease-in-out;
 
