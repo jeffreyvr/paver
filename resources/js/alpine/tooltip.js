@@ -1,5 +1,5 @@
 document.addEventListener('alpine:init', () => {
-    Alpine.directive('tooltip', (el, { expression }, { effect, evaluate }) => {
+    Alpine.directive('paver-tooltip', (el, { expression }, { effect, evaluate }) => {
         const content = evaluate(expression);
 
         effect(() => {
