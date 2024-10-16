@@ -1,23 +1,17 @@
-import tippy from 'tippy.js'
-import Alpine from 'alpinejs'
+import Localization from './localization.js'
+import Shortcuts from './shortcuts.js'
+import ApiClient from './apiClient.js'
 import morph from '@alpinejs/morph'
+import History from './history.js'
 import helpers from './helpers.js'
 import Sortable from 'sortablejs'
-import History from './history.js'
-import ApiClient from './apiClient.js'
-import Shortcuts from './shortcuts.js'
-import Localization from './localization.js'
-import './alpine/tooltip.js'
 import 'tippy.js/dist/tippy.css'
+import Alpine from 'alpinejs'
+import tippy from 'tippy.js'
+import './alpine/tooltip.js'
 import './resizer.js'
 
 Alpine.plugin(morph)
-
-window.Alpine = Alpine
-
-window.tippy = tippy
-
-window.Sortable = Sortable
 
 window.Paver = function (data) {
     return {
@@ -568,6 +562,14 @@ window.Paver = function (data) {
             }
         }
     }
+}
+
+if(! window.tippy) {
+    window.tippy = tippy
+}
+
+if(! window.Alpine) {
+    window.Alpine = Alpine
 }
 
 if(window.__paver_start_alpine) {

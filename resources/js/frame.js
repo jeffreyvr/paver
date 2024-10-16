@@ -1,18 +1,14 @@
-import Alpine from 'alpinejs'
-import morph from '@alpinejs/morph'
-import helpers from './helpers.js'
-import tippy from 'tippy.js'
-import 'tippy.js/dist/tippy.css'
+import Localization from './localization.js'
 import ApiClient from './apiClient.js'
 import Shortcuts from './shortcuts.js'
-import Localization from './localization.js'
+import morph from '@alpinejs/morph'
+import helpers from './helpers.js'
+import 'tippy.js/dist/tippy.css'
+import Alpine from 'alpinejs'
+import tippy from 'tippy.js'
 import './alpine/tooltip.js'
 
-window.tippy = tippy
-
 Alpine.plugin(morph)
-
-window.Alpine = Alpine
 
 window.PaverFrame = function (data) {
     return {
@@ -94,7 +90,7 @@ window.PaverFrame = function (data) {
         async edit(e) {
             let target = e.currentTarget.parentNode.parentNode
 
-            if(target.classList.contains('paver__active-block')) {
+            if (target.classList.contains('paver__active-block')) {
                 return;
             }
 
@@ -162,20 +158,11 @@ window.PaverFrame = function (data) {
 
                 currentBlock.data = response.data
 
-                // console.log(this.editingElement, response.render)
-
-                // Not using morph, as it sometimes breaks alpine components
                 Alpine.morph(this.editingElement, response.render)
                 const newElement = document.createElement('div')
                 newElement.innerHTML = response.render
-                // console.log(this.editingElement)
-                // let parent = this.editingElement.parentNode
-                // console.log('parent=', parent)
-                // // parent.replaceChild(newElement, this.editingElement)
+
                 this.editingElement.innerHTML = newElement.querySelector('[data-block]').innerHTML
-                // // console.log(this.editingElement);
-                // this.editingElement.replaceWith(newElement)
-                // console.log('el=',this.editingElement)
 
                 this.editingElement.setAttribute('data-block', JSON.stringify(currentBlock))
 
@@ -206,7 +193,15 @@ window.PaverFrame = function (data) {
     }
 }
 
-if(window.__paver_start_alpine) {
+if (!window.tippy) {
+    window.tippy = tippy
+}
+
+if (!window.Alpine) {
+    window.Alpine = Alpine
+}
+
+if (window.__paver_start_alpine) {
     console.log('[PAVER] Starting Alpine.js from frame')
 
     Alpine.start()
