@@ -6,9 +6,18 @@ abstract class Option
 {
     public array $attributes = [];
 
+    public string $wrapper = '_INJECT_';
+
     public static function make(...$args)
     {
         return new static(...$args);
+    }
+
+    public function condition($condition)
+    {
+        $this->wrapper = '<div x-show="'.($condition).'">_INJECT_</div>';
+
+        return $this;
     }
 
     public function render()
@@ -29,6 +38,6 @@ abstract class Option
 
     public function __toString()
     {
-        return $this->render();
+        return str_replace('_INJECT_', $this->render(), $this->wrapper);
     }
 }
