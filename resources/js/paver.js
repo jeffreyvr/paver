@@ -221,7 +221,7 @@ window.Paver = function (data) {
             helpers.listenFromFrame('update', (event) => {
                 this.log('Updating editor content')
 
-                let nestedSortables = this.root().querySelectorAll('.paver-sortable')
+                let nestedSortables = this.root().querySelectorAll('.paver__sortable')
 
                 nestedSortables.forEach(element => {
                     this.initNestedSoratable(element)
