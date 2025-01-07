@@ -12,9 +12,15 @@
                 </div>
                 <div x-ref="blocksInserter" class="paver__block-grid paver__sortable">
                     <?php foreach(paver()->blocks() as $block) : ?>
-                        <div class="paver__sortable-item paver__block-handle" data-block="<?php echo $block['reference']; ?>">
+                        <div  x-paver-tooltip="text('<?php echo addslashes($block['name']); ?>')" class="paver__sortable-item paver__block-handle" data-block="<?php echo $block['reference']; ?>">
                             <span><?php echo $block['icon']; ?></span>
-                            <span><?php echo $block['name']; ?></span>
+                            <span><?php
+                                // Trucate the block name if it's too long
+                                if(strlen($block['name']) > 10) {
+                                    echo substr($block['name'], 0, 10) . '...';
+                                } else
+                                    echo $block['name'];
+                                ?></span>
                         </div>
                     <?php endforeach; ?>
                 </div>
