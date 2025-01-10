@@ -1,6 +1,6 @@
 <?php
+use Jeffreyvr\Paver\View;
 use Jeffreyvr\Paver\Blocks\Renderer;
-use Jeffreyvr\Paver\Blocks\BlockFactory;
 
 paver()->frame->activate();
 ?><!DOCTYPE html>
@@ -27,6 +27,7 @@ paver()->frame->activate();
         <div class="paver__editor-root paver__sortable">
             <?php echo Renderer::blocks($blocks, 'editor'); ?>
         </div>
+        <?php echo (new View(paver()->viewPath().'/editor/breadcrumb.php')); ?>
     </div>
 
     <?php echo paver()->frame->footerHtml; ?>

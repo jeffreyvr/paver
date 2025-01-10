@@ -16,15 +16,15 @@ abstract class Block
 
     public array $data = [];
 
-    public bool $childOnly = false;
+    public bool $isInEditor = false;
+
+    public bool $asChildOnly = false;
 
     public static string $reference = 'REFERENCE_NOT_SET';
 
     public string $icon = '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
         <path stroke-linecap="round" stroke-linejoin="round" d="M5.25 7.5A2.25 2.25 0 0 1 7.5 5.25h9a2.25 2.25 0 0 1 2.25 2.25v9a2.25 2.25 0 0 1-2.25 2.25h-9a2.25 2.25 0 0 1-2.25-2.25v-9Z" />
     </svg>';
-
-    public ?string $section = null;
 
     public function __construct()
     {
@@ -33,7 +33,21 @@ abstract class Block
 
     public function renderer($context = 'front-end'): Renderer
     {
+        if($context === 'editor') {
+            $this->isInEditor = true;
+        }
+
         return new Renderer($this, $context);
+    }
+
+    public function isInEditor()
+    {
+        return $this->isInEditor;
+    }
+
+    public function asChildOnly()
+    {
+        return $this->asChildOnly;
     }
 
     public function getIcon(): string
@@ -48,13 +62,6 @@ abstract class Block
         return $this;
     }
 
-    public function setChildOnly(bool $childOnly): self
-    {
-        $this->childOnly = $childOnly;
-
-        return $this;
-    }
-
     public function setReference(string $reference): self
     {
         $this->reference = $reference;
@@ -65,13 +72,6 @@ abstract class Block
     public function setChildren(array $children): self
     {
         $this->children = $children;
-
-        return $this;
-    }
-
-    public function setSection(string $section): self
-    {
-        $this->section = $section;
 
         return $this;
     }
@@ -105,15 +105,6 @@ abstract class Block
         return $this;
     }
 
-    public function toolbar()
-    {
-        ob_start();
-
-        include paver()->viewPath().'/block-toolbar.php';
-
-        return ob_get_clean();
-    }
-
     public function render()
     {
         return '<!-- Block has no content -->';
@@ -144,13 +135,13 @@ abstract class Block
         return $options;
     }
 
-    public function toJson($include = ['block', 'children', 'data']): string
+    public function toJson($include = ['name', 'block', 'children', 'data']): string
     {
         $object = [
+            'name' => $this->name,
             'block' => static::$reference,
             'children' => $this->children,
             'data' => $this->data,
-            'childOnly' => $this->childOnly,
             'icon' => $this->icon,
         ];
 

@@ -2,6 +2,8 @@
 
 namespace Jeffreyvr\Paver\Blocks;
 
+use Jeffreyvr\Paver\View;
+
 class Renderer
 {
     protected Block $block;
@@ -25,11 +27,9 @@ class Renderer
             return '';
         }
 
-        ob_start();
-
-        include paver()->viewPath().'/block-toolbar.php';
-
-        return ob_get_clean();
+        return new View(paver()->viewPath() . '/block-toolbar.php', [
+            'block' => $this->block
+        ]);
     }
 
     public function renderChildren(): string
@@ -91,7 +91,7 @@ class Renderer
     public function render(): string
     {
         $attributeString = $this->isEditorContext()
-            ? 'class="'.$this->blockClassName().' paver__sortable-item parent" data-id="'.$this->block->getId().'" data-block="'.htmlspecialchars($this->block->toJson(), ENT_QUOTES, 'UTF-8').'"'
+            ? 'class="'.$this->blockClassName().' paver__block paver__sortable-item parent" data-id="'.$this->block->getId().'" data-block="'.htmlspecialchars($this->block->toJson(), ENT_QUOTES, 'UTF-8').'"'
             : 'class="'.$this->blockClassName().'"';
 
         $content = '<div '.$attributeString.'>';

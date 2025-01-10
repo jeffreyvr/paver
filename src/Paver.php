@@ -100,8 +100,7 @@ class Paver
             $data = [
                 'name' => $instance->name,
                 'reference' => $instance::$reference,
-                'icon' => $instance->getIcon(),
-                'childOnly' => $instance->childOnly,
+                'icon' => $instance->getIcon()
             ];
 
             if($withInstance) {

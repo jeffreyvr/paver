@@ -11,8 +11,9 @@
                     Whoops, we don't have any blocks (yet)!
                 </div>
                 <div x-ref="blocksInserter" class="paver__block-grid paver__sortable">
-                    <?php foreach(paver()->blocks() as $block) : ?>
-                        <div class="paver__sortable-item paver__block-handle" data-block="<?php echo $block['reference']; ?>">
+                    <?php foreach(paver()->blocks(withInstance: true) as $block): ?>
+                        <div class="paver__sortable-item paver__block-handle <?php echo ($block['instance']->asChildOnly()) ? 'paver__hide_from_block_inserter' : ''; ?>"
+                            data-block="<?php echo htmlentities($block['instance']->toJson(['block', 'name']), ENT_QUOTES, 'UTF-8'); ?>">
                             <span><?php echo $block['icon']; ?></span>
                             <span><?php echo $block['name']; ?></span>
                         </div>
