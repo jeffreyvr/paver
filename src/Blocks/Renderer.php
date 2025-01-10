@@ -27,8 +27,8 @@ class Renderer
             return '';
         }
 
-        return new View(paver()->viewPath() . '/block-toolbar.php', [
-            'block' => $this->block
+        return new View(paver()->viewPath().'/block-toolbar.php', [
+            'block' => $this->block,
         ]);
     }
 

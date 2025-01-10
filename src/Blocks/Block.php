@@ -33,7 +33,7 @@ abstract class Block
 
     public function renderer($context = 'front-end'): Renderer
     {
-        if($context === 'editor') {
+        if ($context === 'editor') {
             $this->isInEditor = true;
         }
 
