@@ -2,6 +2,7 @@
 @import "_animations.css";
 @import "_utilities.css";
 @import "_toolbar.css";
+@import '_breadcrumb.css';
 
 html,
 body {
@@ -16,6 +17,7 @@ body {
 
 .sortable {
   min-height: 50px;
+  padding: 5px 0;
 }
 
 /* body {
@@ -24,7 +26,8 @@ body {
 } */
 
 .editor-root {
-  min-height: 300px;
+    padding: 0;
+    min-height: 300px;
 }
 
 .sortable-ghost {
@@ -73,7 +76,7 @@ body {
   }
 
   &:hover::after {
-    border-color: rgba(3, 124, 186, 0.25);
+    border-color: var(--paver-color-primary);
   }
 }
 
@@ -85,7 +88,7 @@ body {
     left: 0;
     right: 0;
     bottom: 0;
-    border: 1px solid rgba(3, 124, 186);
+    border: 1px solid var(--paver-color-primary);
     pointer-events: none;
   }
 }

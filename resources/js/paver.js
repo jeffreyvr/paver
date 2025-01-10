@@ -17,6 +17,8 @@ window.Paver = function (data) {
     return {
         ...Localization,
 
+        breadcrumb: [],
+
         texts: data.texts,
 
         api: new ApiClient(data.api),
@@ -138,15 +140,19 @@ window.Paver = function (data) {
         determineAllowedBlocks() {
             this.allowedBlocks = []
 
-            this.root().querySelector('.paver__active-block').querySelectorAll('.paver__sortable').forEach(element => {
-                if(! element.hasAttribute('data-allow-blocks')) {
-                    return
-                }
+            let element = this.root().querySelector('.paver__active-block .paver__sortable')
 
-                let elementAllowedBlocks = JSON.parse(element.getAttribute('data-allow-blocks'))
+            if(! element) {
+                return
+            }
 
-                this.allowedBlocks = [...this.allowedBlocks, ...elementAllowedBlocks]
-            })
+            if(! element.hasAttribute('data-allow-blocks')) {
+                return
+            }
+
+            let elementAllowedBlocks = JSON.parse(element.getAttribute('data-allow-blocks'))
+
+            this.allowedBlocks = [...this.allowedBlocks, ...elementAllowedBlocks]
 
             this.log('Blocks allowed in this block:', this.allowedBlocks)
         },
@@ -191,8 +197,14 @@ window.Paver = function (data) {
 
             helpers.listenFromFrame('expand', (event) => this.toggleExpand())
 
+            Shortcuts.selectParentBlock(() => {
+                helpers.dispatchToFrame(this.$refs.editor, 'selectParentBlock')
+            })
+
             helpers.listenFromFrame('loading', () => this.isLoading())
             helpers.listenFromFrame('loaded', () => this.isLoaded())
+
+            helpers.listenFromFrame('updateBreadcrumb', (event) => this.breadcrumb = event.breadcrumb)
 
             document.addEventListener('loading', () => this.isLoading())
             document.addEventListener('loaded', () => this.isLoaded())
@@ -298,7 +310,6 @@ window.Paver = function (data) {
             })
         },
 
-
         determineVisibleInsertableBlocks() {
             const searchTerm = this.blockInserter.search.trim().toLowerCase()
             const allowedBlocks = this.allowedBlocks.length ? this.allowedBlocks : null
@@ -308,10 +319,17 @@ window.Paver = function (data) {
             let totalVisible = 0
 
             blocks.forEach(block => {
-                const blockName = block.getAttribute('data-block').trim().toLowerCase()
+                const blockData = JSON.parse(block.getAttribute('data-block'))
+                const blockName = blockData.block.trim().toLowerCase()
+                const isHidden = block.classList.contains('paver__hide_from_block_inserter')
                 const matchesSearch = !searchTerm || blockName.includes(searchTerm)
                 const isAllowed = !allowedBlocks || allowedBlocks.includes(blockName)
                 const withinLimit = this.blockInserter.showAll || visibleCount < this.blockInserter.limit
+
+                if (isHidden && (!allowedBlocks || !allowedBlocks.includes(blockName))) {
+                    block.style.display = 'none'
+                    return
+                }
 
                 if (matchesSearch && isAllowed) {
                     totalVisible++
@@ -427,7 +445,7 @@ window.Paver = function (data) {
 
                         let allowedBlocks = JSON.parse(to.el.getAttribute('data-allow-blocks'))
 
-                        let draggedBlock = draggedElement.getAttribute('data-block').trim().toLowerCase()
+                        let draggedBlock = JSON.parse(draggedElement.getAttribute('data-block')).block.trim().toLowerCase()
 
                         return allowedBlocks.some(block => block.trim().toLowerCase() === draggedBlock)
                     }
@@ -531,14 +549,15 @@ window.Paver = function (data) {
         },
 
         async fetchBlock(evt) {
-            const block = evt.item.getAttribute('data-block')
+            const block = JSON.parse(evt.item.getAttribute('data-block'))
+
             try {
-                const response = await this.api.fetchBlock(block, this.api.payload)
+                const response = await this.api.fetchBlock(block.block, this.api.payload)
 
                 const newElement = document.createElement('div')
                 newElement.innerHTML = response.render
 
-                newElement.firstElementChild.setAttribute('data-block', JSON.stringify({block, data: response.data}))
+                newElement.firstElementChild.setAttribute('data-block', JSON.stringify({...block, data: response.data}))
                 newElement.firstElementChild.setAttribute('data-id', response.id)
 
                 evt.item.outerHTML = newElement.innerHTML

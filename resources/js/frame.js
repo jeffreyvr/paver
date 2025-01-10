@@ -20,6 +20,8 @@ window.PaverFrame = function (data) {
 
         blocks: [],
 
+        breadcrumb: [],
+
         editingBlock: null,
 
         editingElement: null,
@@ -32,6 +34,9 @@ window.PaverFrame = function (data) {
             Shortcuts.revert(() => this.revert())
             Shortcuts.expand(() => this.expand())
             Shortcuts.exit(() => this.exit())
+
+            Shortcuts.selectParentBlock(() => this.selectParentBlock())
+            helpers.listenFromFrame('selectParentBlock', () => this.selectParentBlock())
 
             document.addEventListener('loading', () => helpers.dispatchToParent('loading'))
             document.addEventListener('loaded', () => helpers.dispatchToParent('loaded'))
@@ -67,6 +72,12 @@ window.PaverFrame = function (data) {
             helpers.dispatchToParent('revert', {})
         },
 
+        selectParentBlock() {
+            if (this.breadcrumb.length > 1) {
+                this.edit(this.breadcrumb[this.breadcrumb.length - 2].target)
+            }
+        },
+
         trash(e) {
             e.preventDefault()
 
@@ -74,25 +85,56 @@ window.PaverFrame = function (data) {
                 return
             }
 
-            let target = e.currentTarget.parentNode.parentNode
+            let target = e.currentTarget.closest('.paver__block')
             let block = target.getAttribute('data-id')
 
             helpers.dispatchToParent('delete', JSON.parse(JSON.stringify(block)))
+            this.breadcrumb = []
         },
 
         clone(e) {
-            let target = e.currentTarget.parentNode.parentNode
+            let target = e.currentTarget.closest('.paver__block')
             // let block = JSON.parse(target.getAttribute('data-block'))
 
             helpers.dispatchToParent('clone', JSON.parse(JSON.stringify({ blockHtml: target.outerHTML })))
+
+            this.breadcrumb = []
+        },
+
+        getBlockBreadcrumb(block) {
+            let breadcrumb = [];
+            let current = block;
+
+            while (current) {
+                breadcrumb.push({target: current, data: JSON.parse(current.getAttribute('data-block'))})
+                current = current.parentElement.closest('.paver__block')
+            }
+
+            return breadcrumb.reverse()
         },
 
         async edit(e) {
-            let target = e.currentTarget.parentNode.parentNode
+            let target = null;
 
-            if (target.classList.contains('paver__active-block')) {
-                return;
+            if (e instanceof Event) {
+                if (e.currentTarget.classList.contains('paver__block')) {
+                    target = e.currentTarget
+                } else {
+                    target = e.currentTarget.closest('.paver__block')
+                }
+            } else if (e instanceof HTMLElement) {
+                if (e.classList.contains('paver__block')) {
+                    target = e
+                } else {
+                    target = e.closest('.paver__block')
+                }
             }
+
+            if (!target || target.classList.contains('paver__active-block')) {
+                return
+            }
+
+            this.breadcrumb = this.getBlockBreadcrumb(target)
 
             let block = JSON.parse(target.getAttribute('data-block'))
 

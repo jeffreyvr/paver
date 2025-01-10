@@ -27,6 +27,16 @@ const Shortcuts = {
                 callback()
             }
         })
+    },
+
+    selectParentBlock(callback) {
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'ArrowUp') {
+                event.preventDefault()
+
+                callback()
+            }
+        })
     }
 }
 

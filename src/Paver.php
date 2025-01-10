@@ -94,17 +94,16 @@ class Paver
 
     public function blocks($encode = false, $withInstance = false): string|array
     {
-        $blocks = array_map(function ($block) use($withInstance) {
+        $blocks = array_map(function ($block) use ($withInstance) {
             $instance = BlockFactory::createById($block);
 
             $data = [
                 'name' => $instance->name,
                 'reference' => $instance::$reference,
                 'icon' => $instance->getIcon(),
-                'childOnly' => $instance->childOnly,
             ];
 
-            if($withInstance) {
+            if ($withInstance) {
                 $data['instance'] = $instance;
             }
 
