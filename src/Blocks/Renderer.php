@@ -94,6 +94,10 @@ class Renderer
             ? 'class="'.$this->blockClassName().' paver__block paver__sortable-item parent" data-id="'.$this->block->getId().'" data-block="'.htmlspecialchars($this->block->toJson(), ENT_QUOTES, 'UTF-8').'"'
             : 'class="'.$this->blockClassName().'"';
 
+        if($this->isEditorContext()) {
+            $this->block->isInEditor = true;
+        }
+
         $content = '<div '.$attributeString.'>';
         $content .= $this->renderToolbar();
         $content .= (string) $this->block->render();
