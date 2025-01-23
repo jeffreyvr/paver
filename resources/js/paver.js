@@ -453,7 +453,11 @@ window.Paver = function (data) {
                 handle: '.paver__block-handle',
                 direction: element.getAttribute('data-direction') || 'vertical',
                 animation: 150,
-                onAdd: (evt) => this.fetchBlock(evt),
+                onAdd: (evt) => {
+                    if(evt.from === this.$refs.blocksInserter) {
+                        this.fetchBlock(evt)
+                    }
+                },
                 onEnd: (evt) => this.rebuildContent()
             })
         },
