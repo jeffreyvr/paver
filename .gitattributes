@@ -6,4 +6,6 @@
 /webpack.mix.js     export-ignore
 /cypress.config.js  export-ignore
 /mix-manifest.json  export-ignore
+/phpunit.xml        export-ignore
+/test.php           export-ignore
 /tests              export-ignore

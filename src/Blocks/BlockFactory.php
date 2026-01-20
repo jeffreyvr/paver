@@ -6,6 +6,10 @@ class BlockFactory
 {
     public static function create($block, $data = null, $children = null)
     {
+        if (! self::isRegisteredBlock($block)) {
+            throw new \InvalidArgumentException("Block class '{$block}' is not registered.");
+        }
+
         $block = new $block;
 
         if (! empty($data)) {
@@ -24,5 +28,12 @@ class BlockFactory
         $block = paver()->getBlock($id);
 
         return self::create($block, $data, $children);
+    }
+
+    public static function isRegisteredBlock(string $class): bool
+    {
+        $registeredBlocks = array_map(fn($block) => $block['class'], paver()->blocks);
+
+        return in_array($class, $registeredBlocks, true);
     }
 }

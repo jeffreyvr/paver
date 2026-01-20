@@ -94,8 +94,10 @@ class Paver
 
     public function blocks($encode = false, $withInstance = false): string|array
     {
+        $visibleBlocks = array_filter($this->blocks, fn($block) => $block['visible'] ?? true);
+
         $blocks = array_map(function ($block) use ($withInstance) {
-            $instance = BlockFactory::createById($block);
+            $instance = BlockFactory::createById($block['reference']);
 
             $data = [
                 'name' => $instance->name,
@@ -108,9 +110,9 @@ class Paver
             }
 
             return $data;
-        }, array_keys($this->blocks));
+        }, $visibleBlocks);
 
-        return $encode ? json_encode($blocks) : $blocks;
+        return $encode ? json_encode(array_values($blocks)) : array_values($blocks);
     }
 
     public function getBlock($name, $instance = false)
@@ -121,12 +123,16 @@ class Paver
 
         return $instance
             ? BlockFactory::createById($name)
-            : $this->blocks[$name];
+            : $this->blocks[$name]['class'];
     }
 
-    public function registerBlock($class)
+    public function registerBlock($class, $visible = true)
     {
-        $this->blocks[$class::$reference] = $class;
+        $this->blocks[$class::$reference] = [
+            'class' => $class,
+            'reference' => $class::$reference,
+            'visible' => $visible,
+        ];
 
         return $this;
     }
