@@ -21,6 +21,17 @@ class Resolve extends Endpoint
         return false;
     }
 
+    protected function checkIfAllowedMethod(\ReflectionClass $class, string $method): bool
+    {
+        if (! $class->hasMethod($method)) {
+            return false;
+        }
+
+        $reflectionMethod = $class->getMethod($method);
+
+        return $reflectionMethod->isPublic() && ! $reflectionMethod->isStatic();
+    }
+
     public function handle()
     {
         $class = $this->get('class');
@@ -28,10 +39,18 @@ class Resolve extends Endpoint
         $call = $this->get('call');
         $args = $this->get('args');
 
+        if (! class_exists($class)) {
+            $this->json(['message' => 'Class not found'], 404);
+        }
+
         $reflectionClass = new ReflectionClass($class);
 
         if (! $this->checkIfAllowedClass($reflectionClass)) {
-            $this->json(['message' => 'Not allowed'], 401);
+            $this->json(['message' => 'Class not allowed'], 403);
+        }
+
+        if (! $this->checkIfAllowedMethod($reflectionClass, $call)) {
+            $this->json(['message' => 'Method not allowed'], 403);
         }
 
         $instance = $reflectionClass->newInstanceArgs($state);

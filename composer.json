@@ -14,7 +14,8 @@
   "require-dev": {
     "laravel/pint": "^1.4",
     "spatie/ray": "^1.36",
-    "spatie/x-ray": "^1.1"
+    "spatie/x-ray": "^1.1",
+    "pestphp/pest": "*"
   },
   "autoload": {
     "psr-4": {
@@ -32,5 +33,10 @@
       "@format",
       "npx mix --production"
     ]
+  },
+  "config": {
+    "allow-plugins": {
+      "pestphp/pest-plugin": true
+    }
   }
 }

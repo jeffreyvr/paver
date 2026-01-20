@@ -1,11 +1,33 @@
 name: Run Tests
 on: [push, pull_request]
 jobs:
-  build:
+  pest:
+    name: PHP ${{ matrix.php }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        php: ['8.2', '8.3']
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          coverage: none
+
+      - name: Install composer dependencies
+        run: composer install --no-interaction --prefer-dist
+
+      - name: Run Pest tests
+        run: ./vendor/bin/pest
+
+  cypress:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: "18"
 
@@ -15,10 +37,10 @@ jobs:
           php-version: "8.3"
 
       - name: Install composer dependencies
-        run: composer install --no-interaction
+        run: composer install --no-interaction --prefer-dist
 
       - name: Install npm dependencies
         run: npm ci
 
-      - name: Run tests
+      - name: Run Cypress tests
         run: npm run test
