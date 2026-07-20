@@ -14,8 +14,17 @@ export default class ApiClient {
     async fetchData(endpointName, payload = {}) {
         document.dispatchEvent(this.loadingEvent);
 
+        const endpoint = this.getEndpoint(endpointName);
+
         try {
-            const response = await fetch(this.getEndpoint(endpointName), {
+            if (! endpoint) {
+                throw new Error(
+                    `No "${endpointName}" endpoint configured. Add it via setEndpoints(), ` +
+                    `alongside: ${Object.keys(this.config.endpoints || {}).join(', ') || 'none'}.`
+                );
+            }
+
+            const response = await fetch(endpoint, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -24,13 +33,28 @@ export default class ApiClient {
                 body: JSON.stringify({ ...this.payload, ...payload }),
             });
 
-            document.dispatchEvent(this.loadedEvent);
+            const body = await response.text();
 
-            return await response.json();
+            if (! response.ok) {
+                throw new Error(
+                    `The "${endpointName}" endpoint (${endpoint}) responded ${response.status}. ` +
+                    `Response: ${body.slice(0, 500)}`
+                );
+            }
+
+            try {
+                return JSON.parse(body);
+            } catch (parseError) {
+                throw new Error(
+                    `The "${endpointName}" endpoint (${endpoint}) did not return JSON. ` +
+                    `Response: ${body.slice(0, 500)}`
+                );
+            }
         } catch (error) {
-            document.dispatchEvent(this.loadedEvent);
-            console.error(`Error ${endpointName} block:`, error);
+            console.error(`[PAVER] ${error.message}`);
             throw error;
+        } finally {
+            document.dispatchEvent(this.loadedEvent);
         }
     }
 

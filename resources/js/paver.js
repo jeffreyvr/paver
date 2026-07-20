@@ -70,6 +70,14 @@ window.Paver = function (data) {
             helpers.log(...args)
         },
 
+        /**
+         * Errors are always reported, regardless of the debug flag: a failing
+         * endpoint is otherwise invisible in the editor.
+         */
+        error(message, error) {
+            console.error('[PAVER] ' + message, error?.message ?? error ?? '')
+        },
+
         save() {
             this.$dispatch('paver-save', {content: this.content})
         },
@@ -624,7 +632,7 @@ window.Paver = function (data) {
 
                 this.record()
             } catch (error) {
-                this.log('error', 'Error fetching options:', error)
+                this.error('Could not insert block:', error)
             }
         }
     }
