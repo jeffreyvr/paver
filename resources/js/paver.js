@@ -566,6 +566,57 @@ window.Paver = function (data) {
             }, 100)
         },
 
+        /**
+         * Where a tapped block should go. The selected block decides: if it
+         * has a drop zone of its own that accepts this block, the block goes
+         * in there, otherwise it is appended to the canvas.
+         */
+        insertionZone(blockName) {
+            const active = this.frame.querySelector('.paver__active-block')
+
+            if (active) {
+                for (const zone of active.querySelectorAll('.paver__sortable')) {
+                    // Skip zones belonging to blocks nested inside this one.
+                    if (zone.closest('.paver__block') !== active) {
+                        continue
+                    }
+
+                    const allowed = zone.getAttribute('data-allow-blocks')
+
+                    if (! allowed || JSON.parse(allowed).includes(blockName)) {
+                        return zone
+                    }
+                }
+            }
+
+            return this.root()
+        },
+
+        /**
+         * Blocks are dragged in on wider screens, but dragging from the
+         * sidebar into the canvas is not workable on touch, so there a tap
+         * inserts the block instead.
+         */
+        insertBlockOnTap(event) {
+            if (! window.matchMedia('(max-width: 768px)').matches) {
+                return
+            }
+
+            const blockJson = event.currentTarget.getAttribute('data-block')
+            const zone = this.insertionZone(JSON.parse(blockJson).block)
+
+            this.log('Inserting block on tap into', zone)
+
+            const placeholder = this.frame.createElement('div')
+            placeholder.setAttribute('data-block', blockJson)
+            zone.appendChild(placeholder)
+
+            this.fetchBlock({ item: placeholder })
+
+            // Get out of the way so the block that was just added is visible.
+            this.sidebarOpen = false
+        },
+
         async fetchBlock(evt) {
             const block = JSON.parse(evt.item.getAttribute('data-block'))
 
