@@ -119,6 +119,32 @@ abstract class Block
         return 'This block has no options.';
     }
 
+    /**
+     * Make sure every named option has a key in $data. Without one there is
+     * no reactive property to bind to, so the option would silently do
+     * nothing. Existing values are never overwritten.
+     */
+    public function seedDataFromOptions(): self
+    {
+        $options = $this->options();
+
+        if (! is_array($options)) {
+            return $this;
+        }
+
+        foreach ($options as $option) {
+            if (! $option instanceof Option || ! isset($option->name)) {
+                continue;
+            }
+
+            if (! array_key_exists($option->name, $this->data)) {
+                $this->data[$option->name] = '';
+            }
+        }
+
+        return $this;
+    }
+
     public function renderOptions()
     {
         $options = $this->options();
