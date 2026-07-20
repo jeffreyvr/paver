@@ -19,26 +19,28 @@ Add the following middleware to your Laravel app in the `bootstrap/app.php` file
 
 Before Laravel v11, middleware needs to be set in `app/Http/Kernel.php`.
 
-## Endpoints
+## Endpoint
 
-Paver expects you to set up a couple of endpoints for it's communication with the server. These endpoints need to return specific data.
-
-To make returning the correct data as simple as possible, pre made endpoint classes have been made.
-
-- fetch (`Jeffreyvr\Paver\Endpoints\Fetch::class`)
-- render (`Jeffreyvr\Paver\Endpoints\Render::class`)
-- options (`Jeffreyvr\Paver\Endpoints\Options::class`)
-- resolve (`Jeffreyvr\Paver\Endpoints\Resolve::class`)
-
-In Laravel, you can register the routes in your routes file:
+Paver's communication with the server goes to a single POST route. Register it in your routes file:
 
 ```php
-Route::middleware('paver')->group(function () {
-    Route::post('/options', fn() => (new Options)->handle());
-    Route::post('/fetch', fn() => (new Fetch)->handle());
-    Route::post('/render', fn() => (new Render)->handle());
-    Route::post('/resolve', fn() => (new Resolve)->handle());
-});
+use Jeffreyvr\Paver\Endpoints\Handler;
+
+Route::middleware('paver')->post('/paver', fn() => Handler::run());
+```
+
+And point Paver at it:
+
+```php
+$paver->api->setEndpoint('/paver');
+```
+
+Every request carries an `action` (`options`, `render`, `fetch` or `resolve`) and `Handler` dispatches on it. `run` reports exceptions as JSON, so failures surface in the editor instead of silently doing nothing.
+
+You can register your own actions too:
+
+```php
+Handler::action('my-action', MyEndpoint::class);
 ```
 
 Note that the middleware `paver` has been added. This is so that the instance of `Paver` is available on these requests.

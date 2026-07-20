@@ -36,7 +36,7 @@ class Example extends Block
 
 ## Available options
 
-Though you're  free to write your options yourself, some pre made options have been made available for you.
+Though you're  free to write your options yourself, some pre made options have been made available for you. You can also create [custom options](/docs/{{version}}/custom-options).
 
 ### Input
 

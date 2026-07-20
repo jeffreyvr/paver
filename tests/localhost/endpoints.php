@@ -1,26 +1,23 @@
 <?php
 
 use Jeffreyvr\Paver\Endpoints\Fetch;
-use Jeffreyvr\Paver\Endpoints\Render;
 use Jeffreyvr\Paver\Endpoints\Options;
+use Jeffreyvr\Paver\Endpoints\Render;
 use Jeffreyvr\Paver\Endpoints\Resolve;
 
+// run() reports exceptions as JSON, so the editor can surface them.
 if(isset($_GET['options'])) {
-    (new Options())
-        ->handle();
+    Options::run();
 }
 
 if(isset($_GET['render'])) {
-    (new Render())
-        ->handle();
+    Render::run();
 }
 
 if(isset($_GET['fetch'])) {
-    (new Fetch())
-        ->handle();
+    Fetch::run();
 }
 
 if(isset($_GET['resolve'])) {
-    (new Resolve())
-        ->handle();
+    Resolve::run();
 }

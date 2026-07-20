@@ -6,6 +6,7 @@
 ### Essentials
 - [Making blocks](/docs/{{version}}/making-blocks)
 - [Block options](/docs/{{version}}/block-options)
+- [Custom options](/docs/{{version}}/custom-options)
 - [View templates](/docs/{{version}}/view-templates)
 - [Rendering](/docs/{{version}}/rendering)
 - [Storing](/docs/{{version}}/storing)

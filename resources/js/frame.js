@@ -156,7 +156,7 @@ window.PaverFrame = function (data) {
                 this.editingElement = target
 
             } catch (error) {
-                console.log('error', 'Error fetching options:', error)
+                console.error('[PAVER] Could not load block options:', error.message)
             }
         },
 
