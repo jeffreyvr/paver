@@ -11,8 +11,10 @@ class Api
     public ?string $endpoint = null;
 
     /**
-     * Per action endpoints. Superseded by $endpoint, kept so existing
-     * setups keep working.
+     * Per action endpoints.
+     *
+     * @deprecated Use a single endpoint via setEndpoint() instead. Support for
+     *             an endpoint per action will be removed in a future release.
      */
     public array $endpoints = [
         'fetch' => '/api/fetch',
@@ -30,9 +32,11 @@ class Api
      *
      *     setEndpoint('/paver')
      *
-     * Or, for the older per action setup:
+     * Passing two arguments sets one action's endpoint instead:
      *
      *     setEndpoint('options', '/paver/options')
+     *
+     * That second form is deprecated and will be removed in a future release.
      */
     public function setEndpoint($nameOrUrl, $endpoint = null)
     {
@@ -47,6 +51,10 @@ class Api
         return $this;
     }
 
+    /**
+     * @deprecated Use setEndpoint('/your-endpoint') instead. Support for an
+     *             endpoint per action will be removed in a future release.
+     */
     public function setEndpoints($endpoints)
     {
         $this->endpoints = $endpoints;

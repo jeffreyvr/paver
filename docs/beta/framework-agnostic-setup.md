@@ -53,21 +53,6 @@ Handler::action('my-action', MyEndpoint::class);
 
 Where `MyEndpoint` extends `Jeffreyvr\Paver\Endpoints\Endpoint`.
 
-### Separate endpoints
-
-Paver used to require an endpoint per action, which still works if you prefer it:
-
-```php
-$paver->api->setEndpoints([
-    'options' => '/your-options-endpoint/',
-    'render' => '/your-render-endpoint/',
-    'fetch' => '/your-fetch-endpoint/',
-    'resolve' => '/your-resolve-endpoint/',
-]);
-```
-
-Each then handled by its own class: `Jeffreyvr\Paver\Endpoints\Options`, `Render`, `Fetch` and `Resolve`. Setting a single endpoint takes precedence over this map.
-
 If you need to pass along data or headers with these requests, you may use the following functions:
 
 ```php

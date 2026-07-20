@@ -8,6 +8,8 @@ export default class ApiClient {
     }
 
     getEndpoint(action) {
+        // The per action fallback is deprecated and will be removed in a
+        // future release; configure a single endpoint instead.
         return this.config.endpoint || (this.config.endpoints || {})[action];
     }
 

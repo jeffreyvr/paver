@@ -43,21 +43,6 @@ You can register your own actions too:
 Handler::action('my-action', MyEndpoint::class);
 ```
 
-### Separate routes
-
-The older setup, with a route per action, still works:
-
-```php
-Route::middleware('paver')->group(function () {
-    Route::post('/options', fn() => Options::run());
-    Route::post('/fetch', fn() => Fetch::run());
-    Route::post('/render', fn() => Render::run());
-    Route::post('/resolve', fn() => Resolve::run());
-});
-```
-
-Combined with `$paver->api->setEndpoints([...])`. Setting a single endpoint takes precedence.
-
 Note that the middleware `paver` has been added. This is so that the instance of `Paver` is available on these requests.
 
 If your endpoints need to be protected, you can add the `auth` middleware. If you have set the `csrf` option in the Paver config file to `true`, this token will be send along with the requests to these endpoints - whereby authentication is handeld by Laravel.
