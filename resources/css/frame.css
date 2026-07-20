@@ -76,7 +76,7 @@ body {
   }
 
   &:hover::after {
-    border-color: var(--paver-color-primary);
+    border-color: var(--paver-color-outline);
   }
 }
 
@@ -88,7 +88,8 @@ body {
     left: 0;
     right: 0;
     bottom: 0;
-    border: 1px solid var(--paver-color-primary);
+    border: 1px solid var(--paver-color-outline);
+    border-radius: 2px;
     pointer-events: none;
   }
 }
