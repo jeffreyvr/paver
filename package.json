@@ -8,7 +8,11 @@
     "stop-server": "lsof -t -i:8000 | xargs kill -9",
     "cypress:open": "cypress open",
     "cypress:run": "cypress run --headless",
-    "test": "npm run start-server & npm run cypress:run && npm run stop-server"
+    "test": "npm run start-server & npm run cypress:run && npm run stop-server",
+    "build:js": "vite build --mode paver && vite build --mode frame",
+    "build:css": "postcss resources/css/paver.css -o assets/css/paver.css && postcss resources/css/frame.css -o assets/css/frame.css",
+    "build": "npm run build:js && npm run build:css",
+    "watch": "vite build --watch --mode paver"
   },
   "repository": {
     "type": "git",
@@ -22,20 +26,19 @@
   },
   "homepage": "https://github.com/paver/paver#readme",
   "devDependencies": {
+    "cssnano": "^8.0.2",
     "cypress": "^13.14.1",
-    "laravel-mix": "^6.0.49",
     "postcss": "^8.4.41",
-    "postcss-import": "^16.1.0",
-    "postcss-prefixer": "^3.0.0"
+    "postcss-cli": "^11.0.1",
+    "postcss-import": "^16.1.1",
+    "postcss-nested": "^7.0.2",
+    "postcss-prefixer": "^3.0.0",
+    "vite": "^8.1.5"
   },
   "dependencies": {
     "@alpinejs/morph": "^3.14.1",
     "alpinejs": "^3.14.1",
-    "postcss-nested": "^6.0.1",
     "sortablejs": "^1.15.2",
     "tippy.js": "^6.3.7"
-  },
-  "overrides": {
-    "webpack": "5.94.0"
   }
 }

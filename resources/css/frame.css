@@ -3,6 +3,7 @@
 @import "_utilities.css";
 @import "_toolbar.css";
 @import '_breadcrumb.css';
+@import 'tippy.js/dist/tippy.css';
 
 html,
 body {
