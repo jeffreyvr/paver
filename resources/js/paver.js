@@ -45,6 +45,13 @@ window.Paver = function (data) {
 
         editing: false,
 
+        // Which sidebar pane is shown: 'blocks' or 'edit'.
+        sidebarPane: 'blocks',
+
+        // Only has an effect on narrow screens, where the sidebar is a drawer
+        // over the canvas. On wider screens the sidebar is always in view.
+        sidebarOpen: false,
+
         loading: true,
 
         blockInserter: {
@@ -122,6 +129,8 @@ window.Paver = function (data) {
 
         exitEditMode() {
             this.editing = false
+            this.sidebarPane = 'blocks'
+            this.sidebarOpen = false
 
             this.frame.querySelectorAll('.paver__active-block').forEach((el) => el.classList.remove('paver__active-block'))
 
@@ -261,6 +270,11 @@ window.Paver = function (data) {
             helpers.listenFromFrame('editingBlock', (event) => {
                 this.edited = false
                 this.editing = true
+
+                // Editing a block reveals its pane, like picking a block in
+                // the canvas focuses its settings.
+                this.sidebarPane = 'edit'
+                this.sidebarOpen = true
 
                 this.editingBlock = {
                     name: event.name,
@@ -601,6 +615,57 @@ window.Paver = function (data) {
             setTimeout(() => {
                 this.loading = false
             }, 100)
+        },
+
+        /**
+         * Where a tapped block should go. The selected block decides: if it
+         * has a drop zone of its own that accepts this block, the block goes
+         * in there, otherwise it is appended to the canvas.
+         */
+        insertionZone(blockName) {
+            const active = this.frame.querySelector('.paver__active-block')
+
+            if (active) {
+                for (const zone of active.querySelectorAll('.paver__sortable')) {
+                    // Skip zones belonging to blocks nested inside this one.
+                    if (zone.closest('.paver__block') !== active) {
+                        continue
+                    }
+
+                    const allowed = zone.getAttribute('data-allow-blocks')
+
+                    if (! allowed || JSON.parse(allowed).includes(blockName)) {
+                        return zone
+                    }
+                }
+            }
+
+            return this.root()
+        },
+
+        /**
+         * Blocks are dragged in on wider screens, but dragging from the
+         * sidebar into the canvas is not workable on touch, so there a tap
+         * inserts the block instead.
+         */
+        insertBlockOnTap(event) {
+            if (! window.matchMedia('(max-width: 768px)').matches) {
+                return
+            }
+
+            const blockJson = event.currentTarget.getAttribute('data-block')
+            const zone = this.insertionZone(JSON.parse(blockJson).block)
+
+            this.log('Inserting block on tap into', zone)
+
+            const placeholder = this.frame.createElement('div')
+            placeholder.setAttribute('data-block', blockJson)
+            zone.appendChild(placeholder)
+
+            this.fetchBlock({ item: placeholder })
+
+            // Get out of the way so the block that was just added is visible.
+            this.sidebarOpen = false
         },
 
         async fetchBlock(evt) {

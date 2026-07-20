@@ -6,4 +6,8 @@
     --paver-color-dark: #3C434A;
     --paver-border-radius: 4px;
     --paver-border-color: #e5e7eb;
+    --paver-canvas-background: #f1f5f9;
+    --paver-toolbar-background: #fff;
+    --paver-toolbar-divider: #e5e7eb;
+    --paver-color-outline: rgba(8, 145, 178, .45);
   }

@@ -3,69 +3,100 @@
 }
 
 .block-toolbar {
-  /* border-radius: 0 0 0 3px; */
   display: none;
   align-items: center;
+  gap: 2px;
   z-index: 100;
   font-family: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
 
   animation: fadeIn 0.2s ease-in-out;
 
+  /* Sits directly on top of the block, flush with its left edge. The editor
+     root reserves room at the top so the first block's toolbar is not
+     clipped. */
   position: absolute;
-  left: 0px;
-  top: 0px;
-  width: 100%;
-  justify-content: space-between;
-  color: #000;
+  left: 0;
+  bottom: 100%;
+  width: auto;
 
-  button:last-of-type {
-    border-right: none;
-    /* border-radius: 0 3px 3px 0; */
+  padding: 4px 5px;
+  background-color: var(--paver-toolbar-background);
+  border: 1px solid var(--paver-border-color);
+
+  /* No bottom border: the toolbar reads as attached to the block. */
+  border-bottom: none;
+  color: var(--paver-color-dark);
+
+  .block-toolbar-info {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 0 8px 0 4px;
+    font-size: .8rem;
+    font-weight: 600;
+    white-space: nowrap;
+
+    /* Divider between the block name and the actions. */
+    border-right: 1px solid var(--paver-toolbar-divider);
+    margin-right: 4px;
   }
 
-  button:first-of-type {
-    /* border-radius: 3px 0 0 3px; */
+  .block-toolbar-icon {
+    display: flex;
+    align-items: center;
+    color: var(--paver-color-primary);
+
+    svg {
+      height: 16px;
+      width: 16px;
+    }
   }
 
   .block-toolbar-actions {
     display: flex;
-  }
-
-  .block-toolbar-info {
-    background-color: var(--paver-color-primary);
-    color: rgba(255, 255, 255, .75);
-    padding: 0 5px;
-    font-size: .8rem;
-    align-self: stretch;
-    display: flex;
     align-items: center;
-    font-weight: 500;
+    gap: 2px;
   }
 
   button {
     border: none;
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
     align-items: center;
-    padding: 0 7px;
-    height: 30px;
-    border-right: 1px solid rgba(255, 255, 255, .15);
-    background-color: var(--paver-color-primary);
-    color: rgba(255, 255, 255, .75);
+    padding: 0;
+    height: 26px;
+    width: 26px;
+    background-color: transparent;
+    color: var(--paver-color-dark);
 
     &:hover {
-      color: #fff;
+      color: var(--paver-color-primary);
+      background-color: var(--paver-color-light);
     }
 
     svg {
-      height: 14px;
-      width: 14px;
+      height: 15px;
+      width: 15px;
+    }
+  }
+
+  /* Destructive action, set apart from the rest. */
+  .block-toolbar-danger {
+    position: relative;
+    margin-left: 7px;
+
+    &::before {
+      content: "";
+      position: absolute;
+      left: -4px;
+      top: 4px;
+      bottom: 4px;
+      border-left: 1px solid var(--paver-toolbar-divider);
+    }
+
+    &:hover {
+      color: #dc2626;
+      background-color: #fef2f2;
     }
   }
 }
-/*
-.sortable-ghost {
-  .block-toolbar {
-    background: #ff0000;
-  }
-} */
