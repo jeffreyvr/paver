@@ -86,6 +86,108 @@ describe('Select Option', function () {
     });
 });
 
+describe('Option Assets', function () {
+    it('registers scripts and styles on an option', function () {
+        $input = Input::make('Test', 'test')
+            ->script('summernote', 'https://example.com/summernote.js', ['jquery'])
+            ->style('summernote', 'https://example.com/summernote.css');
+
+        expect($input->scripts)->toHaveCount(1);
+        expect($input->scripts[0]['handle'])->toBe('summernote');
+        expect($input->scripts[0]['deps'])->toBe(['jquery']);
+        expect($input->styles)->toHaveCount(1);
+    });
+
+    it('collects option assets from registered blocks', function () {
+        $block = new class extends \Jeffreyvr\Paver\Blocks\Block
+        {
+            public static string $reference = 'test.assets';
+
+            public function options()
+            {
+                return [
+                    Input::make('Content', 'content')
+                        ->script('jquery', 'https://example.com/jquery.js')
+                        ->script('summernote', 'https://example.com/summernote.js', ['jquery'])
+                        ->style('summernote', 'https://example.com/summernote.css'),
+                ];
+            }
+        };
+
+        paver()->blocks = [];
+        paver()->registerBlock(get_class($block));
+
+        $scripts = paver()->optionAssets('scripts');
+        $styles = paver()->optionAssets('styles');
+
+        expect(array_column($scripts, 'handle'))->toBe(['jquery', 'summernote']);
+        expect(array_column($styles, 'handle'))->toBe(['summernote']);
+    });
+
+    it('dedupes assets by handle and orders dependencies first', function () {
+        $blockA = new class extends \Jeffreyvr\Paver\Blocks\Block
+        {
+            public static string $reference = 'test.assets-a';
+
+            public function options()
+            {
+                return [
+                    Input::make('A', 'a')
+                        ->script('summernote', 'https://example.com/summernote.js', ['jquery'])
+                        ->script('jquery', 'https://example.com/jquery.js'),
+                ];
+            }
+        };
+
+        $blockB = new class extends \Jeffreyvr\Paver\Blocks\Block
+        {
+            public static string $reference = 'test.assets-b';
+
+            public function options()
+            {
+                return [
+                    Input::make('B', 'b')
+                        ->script('summernote', 'https://example.com/other-summernote.js'),
+                ];
+            }
+        };
+
+        paver()->blocks = [];
+        paver()->registerBlock(get_class($blockA));
+        paver()->registerBlock(get_class($blockB));
+
+        $scripts = paver()->optionAssets('scripts');
+
+        expect($scripts)->toHaveCount(2);
+        expect(array_column($scripts, 'handle'))->toBe(['jquery', 'summernote']);
+        expect($scripts[1]['src'])->toBe('https://example.com/summernote.js');
+    });
+
+    it('outputs option assets in the editor render', function () {
+        $block = new class extends \Jeffreyvr\Paver\Blocks\Block
+        {
+            public static string $reference = 'test.assets-render';
+
+            public function options()
+            {
+                return [
+                    Input::make('Content', 'content')
+                        ->script('summernote', 'https://example.com/summernote.js')
+                        ->style('summernote', 'https://example.com/summernote.css'),
+                ];
+            }
+        };
+
+        paver()->blocks = [];
+        paver()->registerBlock(get_class($block));
+
+        $html = (string) paver()->render();
+
+        expect($html)->toContain('<script src="https://example.com/summernote.js"></script>');
+        expect($html)->toContain('<link rel="stylesheet" href="https://example.com/summernote.css">');
+    });
+});
+
 describe('Option Wrapper', function () {
     it('has default wrapper', function () {
         $input = new Input('Test', 'test');
