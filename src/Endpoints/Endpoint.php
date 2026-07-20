@@ -8,12 +8,24 @@ abstract class Endpoint
 {
     public array $request = [];
 
-    public function __construct()
+    /**
+     * @param  array|null  $request  Pre-parsed request body. Defaults to reading
+     *                               the raw request, which is what you want
+     *                               unless another endpoint is delegating to
+     *                               this one.
+     */
+    public function __construct(?array $request = null)
     {
+        if ($request !== null) {
+            $this->request = $request;
+
+            return;
+        }
+
         $input = file_get_contents('php://input');
 
         if ($input) {
-            $this->request = json_decode($input, true);
+            $this->request = json_decode($input, true) ?? [];
         }
     }
 
@@ -25,6 +37,24 @@ abstract class Endpoint
     public function context(): RenderContext
     {
         return paver()->resolveContext($this->get('context', []), 'editor');
+    }
+
+    /**
+     * Run a handler, turning any exception into a JSON error response so the
+     * editor can surface it instead of choking on an HTML error page.
+     */
+    public static function run(...$args)
+    {
+        $endpoint = new static(...$args);
+
+        try {
+            return $endpoint->handle();
+        } catch (\Throwable $e) {
+            $endpoint->json([
+                'error' => $e->getMessage(),
+                'type' => get_class($e),
+            ], 500);
+        }
     }
 
     public function json($data, $statusCode = 200)

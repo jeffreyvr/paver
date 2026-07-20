@@ -7,30 +7,57 @@ export default class ApiClient {
         this.loadedEvent = new Event('loaded');
     }
 
-    getEndpoint(name) {
-        return this.config.endpoints[name];
+    getEndpoint(action) {
+        // The per action fallback is deprecated and will be removed in a
+        // future release; configure a single endpoint instead.
+        return this.config.endpoint || (this.config.endpoints || {})[action];
     }
 
-    async fetchData(endpointName, payload = {}) {
+    async fetchData(action, payload = {}) {
         document.dispatchEvent(this.loadingEvent);
 
+        const endpoint = this.getEndpoint(action);
+
         try {
-            const response = await fetch(this.getEndpoint(endpointName), {
+            if (! endpoint) {
+                throw new Error(
+                    `No endpoint configured for the "${action}" action. Point Paver at a ` +
+                    `single endpoint with setEndpoint('/your-endpoint'), or add "${action}" ` +
+                    `to setEndpoints().`
+                );
+            }
+
+            const response = await fetch(endpoint, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                     ...this.headers,
                 },
-                body: JSON.stringify({ ...this.payload, ...payload }),
+                body: JSON.stringify({ action, ...this.payload, ...payload }),
             });
 
-            document.dispatchEvent(this.loadedEvent);
+            const body = await response.text();
 
-            return await response.json();
+            if (! response.ok) {
+                throw new Error(
+                    `The "${action}" action endpoint (${endpoint}) responded ${response.status}. ` +
+                    `Response: ${body.slice(0, 500)}`
+                );
+            }
+
+            try {
+                return JSON.parse(body);
+            } catch (parseError) {
+                throw new Error(
+                    `The "${action}" action endpoint (${endpoint}) did not return JSON. ` +
+                    `Response: ${body.slice(0, 500)}`
+                );
+            }
         } catch (error) {
-            document.dispatchEvent(this.loadedEvent);
-            console.error(`Error ${endpointName} block:`, error);
+            console.error(`[PAVER] ${error.message}`);
             throw error;
+        } finally {
+            document.dispatchEvent(this.loadedEvent);
         }
     }
 
