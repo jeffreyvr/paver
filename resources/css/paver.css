@@ -1,6 +1,7 @@
 @import './_variables.css';
 @import './_utilities.css';
 @import './_animations.css';
+@import 'tippy.js/dist/tippy.css';
 
 [x-cloak] {
     display: none;
