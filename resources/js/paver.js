@@ -137,6 +137,47 @@ window.Paver = function (data) {
             this.log('Block change', event)
         },
 
+        /**
+         * Dispatch `paver:option-init` for every option rendered into the
+         * sidebar, so options backed by a third party library can initialize
+         * without needing to know how the sidebar is rendered.
+         */
+        initOptions(root) {
+            const options = root.querySelectorAll('[data-paver-option]')
+
+            if (! options.length) {
+                return
+            }
+
+            // Alpine initializes the injected tree on a microtask, so wait for
+            // it before handing listeners a scope to read and write.
+            queueMicrotask(() => {
+                options.forEach(el => {
+                    const name = el.getAttribute('data-paver-option-name')
+                    const scope = () => Alpine.$data(el)
+
+                    this.log('Initializing option', el.getAttribute('data-paver-option'), name)
+
+                    el.dispatchEvent(new CustomEvent('paver:option-init', {
+                        bubbles: true,
+                        detail: {
+                            el,
+                            name,
+                            type: el.getAttribute('data-paver-option'),
+                            get value() {
+                                return name ? scope()[name] : undefined
+                            },
+                            setValue: (value) => {
+                                if (name) {
+                                    scope()[name] = value
+                                }
+                            },
+                        },
+                    }))
+                })
+            })
+        },
+
         determineAllowedBlocks() {
             this.allowedBlocks = []
 
@@ -225,6 +266,8 @@ window.Paver = function (data) {
                 this.$nextTick(() => {
                     this.$refs.componentSidebar.querySelector('.paver__inside').innerHTML = event.html
                     this.edited = true
+
+                    this.initOptions(this.$refs.componentSidebar)
 
                     this.record()
                 })
