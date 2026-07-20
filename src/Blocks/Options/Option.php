@@ -12,6 +12,13 @@ abstract class Option
 
     public string $wrapper = '_INJECT_';
 
+    /**
+     * When set, a `paver:option-init` event is dispatched for this option
+     * once it has been rendered into the sidebar, carrying this type so
+     * listeners can recognise their own options.
+     */
+    public string $type = '';
+
     public static function make(...$args)
     {
         return new static(...$args);
@@ -41,6 +48,31 @@ abstract class Option
     public function render()
     {
         return '';
+    }
+
+    /**
+     * Render the standard option markup around your own HTML, including the
+     * hooks the editor needs to dispatch `paver:option-init` for it.
+     */
+    public function container(string $html, array $attributes = []): string
+    {
+        $attributes = array_merge([
+            'class' => 'paver__option',
+            'data-paver-option' => $this->type ?: static::class,
+            'data-paver-option-name' => $this->name ?? '',
+        ], $attributes);
+
+        $attributeString = '';
+
+        foreach ($attributes as $key => $value) {
+            $attributeString .= ' '.$key.'="'.htmlspecialchars((string) $value, ENT_QUOTES, 'UTF-8').'"';
+        }
+
+        $label = isset($this->label)
+            ? '<label>'.htmlspecialchars((string) $this->label, ENT_QUOTES, 'UTF-8').'</label>'
+            : '';
+
+        return '<div'.$attributeString.'>'.$label.$html.'</div>';
     }
 
     public function makeAttributeString($attributes)
