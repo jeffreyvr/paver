@@ -2,6 +2,8 @@
 
 namespace Jeffreyvr\Paver\Endpoints;
 
+use Jeffreyvr\Paver\RenderContext;
+
 abstract class Endpoint
 {
     public array $request = [];
@@ -18,6 +20,11 @@ abstract class Endpoint
     public function get($key, $default = null)
     {
         return $this->request[$key] ?? $default;
+    }
+
+    public function context(): RenderContext
+    {
+        return paver()->resolveContext($this->get('context', []), 'editor');
     }
 
     public function json($data, $statusCode = 200)

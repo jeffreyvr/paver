@@ -2,23 +2,24 @@
 
 namespace Jeffreyvr\Paver\Blocks;
 
+use Jeffreyvr\Paver\RenderContext;
 use Jeffreyvr\Paver\View;
 
 class Renderer
 {
     protected Block $block;
 
-    protected string $context;
+    protected RenderContext $context;
 
-    public function __construct(Block $block, string $context = 'front-end')
+    public function __construct(Block $block, RenderContext|string $context = 'front-end')
     {
         $this->block = $block;
-        $this->context = $context;
+        $this->context = RenderContext::make($context);
     }
 
     protected function isEditorContext(): bool
     {
-        return $this->context === 'editor';
+        return $this->context->isEditor();
     }
 
     public function renderToolbar(): string
@@ -43,10 +44,10 @@ class Renderer
 
         $originalBlock = $this->block;
 
-        foreach ($this->block->children as $childBlock) {
+        foreach (array_values($this->block->children) as $index => $childBlock) {
             $childBlockInstance = BlockFactory::createById($childBlock['block'], $childBlock['data'] ?? [], $childBlock['children'] ?? []);
 
-            $childRenderer = new Renderer($childBlockInstance, $this->context);
+            $childRenderer = new Renderer($childBlockInstance, $this->context->forChild($this->block, $index));
             $output .= $childRenderer->render();
         }
 
@@ -94,9 +95,11 @@ class Renderer
             ? 'class="'.$this->blockClassName().' paver__block paver__sortable-item parent" data-id="'.$this->block->getId().'" data-block="'.htmlspecialchars($this->block->toJson(), ENT_QUOTES, 'UTF-8').'"'
             : 'class="'.$this->blockClassName().'"';
 
-        if($this->isEditorContext()) {
+        if ($this->isEditorContext()) {
             $this->block->isInEditor = true;
         }
+
+        $this->block->context = $this->context;
 
         $content = '<div '.$attributeString.'>';
         $content .= $this->renderToolbar();
@@ -106,12 +109,12 @@ class Renderer
         return $this->replacePaverComments($content, $this->renderChildren());
     }
 
-    public static function block(Block $block, string $context = 'front-end'): string
+    public static function block(Block $block, RenderContext|string $context = 'front-end'): string
     {
         return (new static($block, $context))->render();
     }
 
-    public static function blocks($blocks, $context = 'front-end'): string
+    public static function blocks($blocks, RenderContext|string $context = 'front-end'): string
     {
         if (is_string($blocks)) {
             $blocks = json_decode($blocks, true);

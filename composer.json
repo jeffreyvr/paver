@@ -9,13 +9,13 @@
     }
   ],
   "require": {
-    "php": "^8.0|^8.1|^8.2"
+    "php": "^8.0"
   },
   "require-dev": {
     "laravel/pint": "^1.4",
     "spatie/ray": "^1.36",
     "spatie/x-ray": "^1.1",
-    "pestphp/pest": "*"
+    "pestphp/pest": "^3.0"
   },
   "autoload": {
     "psr-4": {
@@ -37,6 +37,9 @@
   "config": {
     "allow-plugins": {
       "pestphp/pest-plugin": true
+    },
+    "platform": {
+      "php": "8.2.0"
     }
   }
 }

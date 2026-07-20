@@ -28,6 +28,8 @@ class Paver
 
     public bool $debug = false;
 
+    protected $contextResolver = null;
+
     public static function instance()
     {
         if (static::$instance === null) {
@@ -46,6 +48,27 @@ class Paver
         $this->debug = $flag;
 
         return $this;
+    }
+
+    public function resolveContextUsing(?callable $resolver)
+    {
+        $this->contextResolver = $resolver;
+
+        return $this;
+    }
+
+    public function resolveContext(array $payload = [], string $mode = 'front-end'): RenderContext
+    {
+        $values = $this->contextResolver
+            ? (array) call_user_func($this->contextResolver, $payload)
+            : [];
+
+        return new RenderContext($mode, $values);
+    }
+
+    public function editorContext(): RenderContext
+    {
+        return $this->resolveContext($this->api->payload['context'] ?? [], 'editor');
     }
 
     public function alpine($flag)
@@ -94,7 +117,7 @@ class Paver
 
     public function blocks($encode = false, $withInstance = false): string|array
     {
-        $visibleBlocks = array_filter($this->blocks, fn($block) => $block['visible'] ?? true);
+        $visibleBlocks = array_filter($this->blocks, fn ($block) => $block['visible'] ?? true);
 
         $blocks = array_map(function ($block) use ($withInstance) {
             $instance = BlockFactory::createById($block['reference']);

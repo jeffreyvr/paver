@@ -14,7 +14,7 @@ class Render extends Endpoint
 
         $this->json([
             'data' => $blockInstance->data,
-            'render' => $blockInstance->renderer('editor')->render(),
+            'render' => $blockInstance->renderer($this->context())->render(),
         ]);
     }
 }

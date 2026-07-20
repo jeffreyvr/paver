@@ -12,6 +12,8 @@ class Options extends Endpoint
 
         $block = BlockFactory::createById($block);
         $block->data = array_merge($block->data, $this->get('block')['data']);
+        $block->context = $this->context();
+        $block->isInEditor = true;
 
         $init = '';
         foreach ($block->data as $key => $value) {

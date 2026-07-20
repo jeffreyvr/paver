@@ -15,7 +15,7 @@ class Fetch extends Endpoint
         $this->json([
             'id' => $block->getId(),
             'data' => $block->data,
-            'render' => $block->renderer('editor')->render(),
+            'render' => $block->renderer($this->context())->render(),
         ]);
     }
 }
