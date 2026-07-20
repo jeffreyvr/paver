@@ -19,27 +19,44 @@ Add the following middleware to your Laravel app in the `bootstrap/app.php` file
 
 Before Laravel v11, middleware needs to be set in `app/Http/Kernel.php`.
 
-## Endpoints
+## Endpoint
 
-Paver expects you to set up a couple of endpoints for it's communication with the server. These endpoints need to return specific data.
+Paver's communication with the server goes to a single POST route. Register it in your routes file:
 
-To make returning the correct data as simple as possible, pre made endpoint classes have been made.
+```php
+use Jeffreyvr\Paver\Endpoints\Handler;
 
-- fetch (`Jeffreyvr\Paver\Endpoints\Fetch::class`)
-- render (`Jeffreyvr\Paver\Endpoints\Render::class`)
-- options (`Jeffreyvr\Paver\Endpoints\Options::class`)
-- resolve (`Jeffreyvr\Paver\Endpoints\Resolve::class`)
+Route::middleware('paver')->post('/paver', fn() => Handler::run());
+```
 
-In Laravel, you can register the routes in your routes file:
+And point Paver at it:
+
+```php
+$paver->api->setEndpoint('/paver');
+```
+
+Every request carries an `action` (`options`, `render`, `fetch` or `resolve`) and `Handler` dispatches on it. `run` reports exceptions as JSON, so failures surface in the editor instead of silently doing nothing.
+
+You can register your own actions too:
+
+```php
+Handler::action('my-action', MyEndpoint::class);
+```
+
+### Separate routes
+
+The older setup, with a route per action, still works:
 
 ```php
 Route::middleware('paver')->group(function () {
-    Route::post('/options', fn() => (new Options)->handle());
-    Route::post('/fetch', fn() => (new Fetch)->handle());
-    Route::post('/render', fn() => (new Render)->handle());
-    Route::post('/resolve', fn() => (new Resolve)->handle());
+    Route::post('/options', fn() => Options::run());
+    Route::post('/fetch', fn() => Fetch::run());
+    Route::post('/render', fn() => Render::run());
+    Route::post('/resolve', fn() => Resolve::run());
 });
 ```
+
+Combined with `$paver->api->setEndpoints([...])`. Setting a single endpoint takes precedence.
 
 Note that the middleware `paver` has been added. This is so that the instance of `Paver` is available on these requests.
 

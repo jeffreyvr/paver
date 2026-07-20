@@ -27,27 +27,46 @@ Finally, you can render the editor.
 $paver->render();
 ```
 
-## Endpoints
+## Endpoint
 
-Paver expects you to set up a couple of endpoints, so that it can fetch and render blocks. These endpoints need to return specific data. They are all POST requests.
+Paver talks to the server to fetch and render blocks. All of it goes to a single POST endpoint, which you point Paver at:
 
-To make returning the correct data as simple as possible, you can use the these classes for the responses:
+```php
+$paver->api->setEndpoint('/your-endpoint/');
+```
 
-- fetch (`Jeffreyvr\Paver\Endpoints\Fetch::class`)
-- render (`Jeffreyvr\Paver\Endpoints\Render::class`)
-- options (`Jeffreyvr\Paver\Endpoints\Options::class`)
-- resolve (`Jeffreyvr\Paver\Endpoints\Resolve::class`)
+Every request carries an `action`, and `Handler` dispatches on it, so your endpoint only needs to hand the request over:
 
-To set the endpoints, use:
+```php
+use Jeffreyvr\Paver\Endpoints\Handler;
+
+Handler::run();
+```
+
+`run` reports exceptions as JSON, so the editor can show you what went wrong instead of failing silently.
+
+### Adding your own actions
+
+```php
+Handler::action('my-action', MyEndpoint::class);
+```
+
+Where `MyEndpoint` extends `Jeffreyvr\Paver\Endpoints\Endpoint`.
+
+### Separate endpoints
+
+Paver used to require an endpoint per action, which still works if you prefer it:
 
 ```php
 $paver->api->setEndpoints([
     'options' => '/your-options-endpoint/',
     'render' => '/your-render-endpoint/',
     'fetch' => '/your-fetch-endpoint/',
-    'resolve' => '/your-fetch-endpoint/',
+    'resolve' => '/your-resolve-endpoint/',
 ]);
 ```
+
+Each then handled by its own class: `Jeffreyvr\Paver\Endpoints\Options`, `Render`, `Fetch` and `Resolve`. Setting a single endpoint takes precedence over this map.
 
 If you need to pass along data or headers with these requests, you may use the following functions:
 
