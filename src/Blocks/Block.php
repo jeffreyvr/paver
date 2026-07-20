@@ -3,6 +3,7 @@
 namespace Jeffreyvr\Paver\Blocks;
 
 use Jeffreyvr\Paver\Blocks\Options\Option;
+use Jeffreyvr\Paver\RenderContext;
 
 abstract class Block
 {
@@ -18,6 +19,8 @@ abstract class Block
 
     public bool $isInEditor = false;
 
+    public ?RenderContext $context = null;
+
     public bool $asChildOnly = false;
 
     public static string $reference = 'REFERENCE_NOT_SET';
@@ -31,9 +34,14 @@ abstract class Block
         //
     }
 
-    public function renderer($context = 'front-end'): Renderer
+    public function renderer(RenderContext|string $context = 'front-end'): Renderer
     {
         return new Renderer($this, $context);
+    }
+
+    public function context(): RenderContext
+    {
+        return $this->context ??= new RenderContext;
     }
 
     public function isInEditor()
