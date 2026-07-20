@@ -1,4 +1,5 @@
-<div class="paver__sidebar">
+<div x-cloak class="paver__sidebar-backdrop" x-show="sidebarOpen" @click="sidebarOpen = false"></div>
+<div class="paver__sidebar" :class="sidebarOpen ? 'paver__is-open' : ''">
     <div class="paver__resizer"></div>
     <div class="paver__sticky">
         <div class="paver__sidebar-tabs">

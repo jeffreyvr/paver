@@ -48,6 +48,10 @@ window.Paver = function (data) {
         // Which sidebar pane is shown: 'blocks' or 'edit'.
         sidebarPane: 'blocks',
 
+        // Only has an effect on narrow screens, where the sidebar is a drawer
+        // over the canvas. On wider screens the sidebar is always in view.
+        sidebarOpen: false,
+
         loading: true,
 
         blockInserter: {
@@ -118,6 +122,7 @@ window.Paver = function (data) {
         exitEditMode() {
             this.editing = false
             this.sidebarPane = 'blocks'
+            this.sidebarOpen = false
 
             this.frame.querySelectorAll('.paver__active-block').forEach((el) => el.classList.remove('paver__active-block'))
 
@@ -220,6 +225,7 @@ window.Paver = function (data) {
                 // Editing a block reveals its pane, like picking a block in
                 // the canvas focuses its settings.
                 this.sidebarPane = 'edit'
+                this.sidebarOpen = true
 
                 this.editingBlock = {
                     name: event.name,

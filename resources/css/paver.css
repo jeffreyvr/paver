@@ -97,7 +97,8 @@
     width: 100%;
     overflow: clip;
 
-    > div:not(.sidebar) {
+    /* The backdrop is an overlay, not one of the editor's columns. */
+    > div:not(.sidebar):not(.sidebar-backdrop) {
         display: flex;
         flex-direction: column;
         align-items: center;
@@ -322,7 +323,61 @@
     }
 }
 
+/* The mobile sidebar toggle and its backdrop are hidden outside the drawer
+   layout below, regardless of whether the drawer is flagged open. */
+.show-on-mobile,
+.sidebar-backdrop {
+    display: none;
+}
+
 @media (max-width: 768px) {
+    .show-on-mobile {
+        display: block;
+    }
+
+    /* The sidebar becomes a drawer over the canvas: side by side leaves too
+       little room for either, and stacking puts a block's settings a scroll
+       away from the block itself. */
+    .sidebar-backdrop {
+        display: block;
+        position: fixed;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        z-index: 999;
+        background: rgba(0, 0, 0, .35);
+    }
+
+    .container .sidebar {
+        position: fixed;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        z-index: 1000;
+        width: 88%;
+        max-width: 320px;
+        min-width: 0;
+        background: #fff;
+        overflow-y: auto;
+        transform: translateX(100%);
+        transition: transform .2s ease;
+
+        &.is-open {
+            transform: none;
+            box-shadow: -4px 0 16px rgba(0, 0, 0, .15);
+        }
+    }
+
+    .container > div:not(.sidebar) {
+        width: 100%;
+    }
+
+    /* Dragging the sidebar wider is meaningless once it is a drawer. */
+    .resizer {
+        display: none;
+    }
+
     .hide-on-mobile {
         display: none;
     }
