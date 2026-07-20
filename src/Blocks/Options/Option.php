@@ -6,11 +6,29 @@ abstract class Option
 {
     public array $attributes = [];
 
+    public array $scripts = [];
+
+    public array $styles = [];
+
     public string $wrapper = '_INJECT_';
 
     public static function make(...$args)
     {
         return new static(...$args);
+    }
+
+    public function script($handle, $src, $deps = [])
+    {
+        $this->scripts[] = compact('handle', 'src', 'deps');
+
+        return $this;
+    }
+
+    public function style($handle, $src, $deps = [])
+    {
+        $this->styles[] = compact('handle', 'src', 'deps');
+
+        return $this;
     }
 
     public function condition($condition)

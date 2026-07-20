@@ -160,6 +160,57 @@ class Paver
         return $this;
     }
 
+    public function optionAssets(string $type): array
+    {
+        $assets = [];
+
+        foreach ($this->blocks as $block) {
+            $options = BlockFactory::createById($block['reference'])->options();
+
+            if (! is_array($options)) {
+                continue;
+            }
+
+            foreach ($options as $option) {
+                if (! $option instanceof Blocks\Options\Option) {
+                    continue;
+                }
+
+                foreach ($option->{$type} as $asset) {
+                    $assets[$asset['handle']] ??= $asset;
+                }
+            }
+        }
+
+        return $this->sortAssetsByDeps($assets);
+    }
+
+    protected function sortAssetsByDeps(array $assets): array
+    {
+        $visited = [];
+        $sorted = [];
+
+        $visit = function ($handle) use (&$visit, &$visited, &$sorted, $assets) {
+            if (isset($visited[$handle]) || ! isset($assets[$handle])) {
+                return;
+            }
+
+            $visited[$handle] = true;
+
+            foreach ($assets[$handle]['deps'] as $dep) {
+                $visit($dep);
+            }
+
+            $sorted[] = $assets[$handle];
+        };
+
+        foreach (array_keys($assets) as $handle) {
+            $visit($handle);
+        }
+
+        return $sorted;
+    }
+
     public function render(array|string|null $content = null, array $config = [])
     {
         if ($content === null) {
