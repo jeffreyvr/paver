@@ -26,7 +26,8 @@ body {
 } */
 
 .editor-root {
-    padding: 0;
+    /* Room for the first block's toolbar, which sits above its block. */
+    padding: 45px 0 0;
     min-height: 300px;
 }
 

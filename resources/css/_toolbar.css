@@ -11,10 +11,24 @@
 
   animation: fadeIn 0.2s ease-in-out;
 
+  /* Sits just above the block, left edge aligned with it. The editor root
+     reserves room at the top so the first block's toolbar is not clipped. */
   position: absolute;
-  left: 8px;
-  top: 8px;
+  left: 0;
+  bottom: 100%;
+  margin-bottom: 5px;
   width: auto;
+
+  /* Bridges the gap to the block, so moving the pointer up to the toolbar
+     never leaves the block and the toolbar does not hide out from under it. */
+  &::after {
+    content: "";
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    height: 5px;
+  }
 
   padding: 5px 6px;
   border-radius: 10px;
