@@ -124,7 +124,7 @@
 
     button {
         flex: 1;
-        padding: 10px 12px;
+        padding: 8px 12px;
         border: none;
         background: transparent;
         font-size: 13px;
@@ -171,6 +171,10 @@
             align-items: center;
             gap: 10px;
             color: var(--paver-color-dark);
+
+            span {
+                text-align: center;
+            }
 
             &:hover {
                 background-color: #F6FAFC;
