@@ -1,8 +1,19 @@
 <div class="paver__sidebar">
     <div class="paver__resizer"></div>
     <div class="paver__sticky">
-        <div class="paver__section">
-            <div class="paver__section-header" x-text="text('Blocks')"></div>
+        <div class="paver__sidebar-tabs">
+            <button type="button"
+                :class="sidebarPane === 'blocks' ? 'paver__is-active' : ''"
+                x-on:click="sidebarPane = 'blocks'"
+                x-text="text('Blocks')"></button>
+            <button type="button"
+                :class="sidebarPane === 'edit' ? 'paver__is-active' : ''"
+                :disabled="! editing"
+                x-on:click="sidebarPane = 'edit'"
+                x-text="text('Edit block')"></button>
+        </div>
+
+        <div class="paver__section" x-show="sidebarPane === 'blocks'">
             <div class="paver__section-content">
                 <div x-cloak x-show="blocks.length > 0" class="paver__option">
                     <input type="text" x-model="blockInserter.search" :placeholder="text('Search blocks')" class="paver__search-blocks">
@@ -37,20 +48,19 @@
                 </div>
             </div>
         </div>
-        <template x-if="editing">
-            <div class="paver__section">
-                <div class="paver__section-header">
-                    <div x-text="editingBlock.name"></div>
-                    <button type="button" @click="exitEditMode" x-paver-tooltip="text('Exit edit mode')" class="paver__btn-icon">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
-                        </svg>
-                    </button>
-                </div>
-                <div class="paver__component-sidebar paver__section-content" x-ref="componentSidebar">
-                    <div class="paver__inside"></div>
-                </div>
+
+        <div class="paver__section" x-show="sidebarPane === 'edit'">
+            <div class="paver__section-header">
+                <div x-text="editingBlock ? editingBlock.name : text('Edit block')"></div>
+                <button type="button" @click="exitEditMode" x-paver-tooltip="text('Exit edit mode')" class="paver__btn-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
+                    </svg>
+                </button>
             </div>
-        </template>
+            <div class="paver__component-sidebar paver__section-content" x-ref="componentSidebar">
+                <div class="paver__inside"></div>
+            </div>
+        </div>
     </div>
 </div>

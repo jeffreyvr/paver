@@ -117,6 +117,36 @@
     min-height: 500px;
 }
 
+.sidebar-tabs {
+    display: flex;
+    border-bottom: 1px solid var(--paver-border-color);
+
+    button {
+        flex: 1;
+        padding: 10px 12px;
+        border: none;
+        background: transparent;
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--paver-color-dark);
+        border-bottom: 2px solid transparent;
+
+        &:hover:not(:disabled) {
+            cursor: pointer;
+            color: var(--paver-color-primary);
+        }
+
+        &:disabled {
+            opacity: .4;
+        }
+
+        &.is-active {
+            color: var(--paver-color-primary);
+            border-bottom-color: var(--paver-color-primary);
+        }
+    }
+}
+
 .sidebar {
     width: 300px;
     border-left: 1px solid var(--paver-border-color);

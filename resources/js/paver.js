@@ -45,6 +45,9 @@ window.Paver = function (data) {
 
         editing: false,
 
+        // Which sidebar pane is shown: 'blocks' or 'edit'.
+        sidebarPane: 'blocks',
+
         loading: true,
 
         blockInserter: {
@@ -114,6 +117,7 @@ window.Paver = function (data) {
 
         exitEditMode() {
             this.editing = false
+            this.sidebarPane = 'blocks'
 
             this.frame.querySelectorAll('.paver__active-block').forEach((el) => el.classList.remove('paver__active-block'))
 
@@ -212,6 +216,10 @@ window.Paver = function (data) {
             helpers.listenFromFrame('editingBlock', (event) => {
                 this.edited = false
                 this.editing = true
+
+                // Editing a block reveals its pane, like picking a block in
+                // the canvas focuses its settings.
+                this.sidebarPane = 'edit'
 
                 this.editingBlock = {
                     name: event.name,
