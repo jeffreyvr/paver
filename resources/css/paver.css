@@ -246,7 +246,15 @@
     position: relative;
     min-width: 300px;
     display: flex;
+    align-items: flex-start;
     justify-content: center;
+
+    /* Fills the height left over by the editor header. */
+    flex: 1;
+
+    /* Matches the gutter inside the frame, so the canvas reads as one
+       surface even when the frame is shorter than the wrapper. */
+    background: var(--paver-canvas-background);
 }
 
 .iframe-overlay {

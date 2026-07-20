@@ -14,7 +14,7 @@
   /* Sits just above the block, left edge aligned with it. The editor root
      reserves room at the top so the first block's toolbar is not clipped. */
   position: absolute;
-  left: 0;
+  left: 8px;
   bottom: 100%;
   margin-bottom: 5px;
   width: auto;
