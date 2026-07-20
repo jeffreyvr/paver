@@ -9,3 +9,4 @@
 /phpunit.xml        export-ignore
 /test.php           export-ignore
 /tests              export-ignore
+/docs               export-ignore
