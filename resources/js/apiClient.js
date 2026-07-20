@@ -7,20 +7,23 @@ export default class ApiClient {
         this.loadedEvent = new Event('loaded');
     }
 
-    getEndpoint(name) {
-        return this.config.endpoints[name];
+    getEndpoint(action) {
+        // The per action fallback is deprecated and will be removed in a
+        // future release; configure a single endpoint instead.
+        return this.config.endpoint || (this.config.endpoints || {})[action];
     }
 
-    async fetchData(endpointName, payload = {}) {
+    async fetchData(action, payload = {}) {
         document.dispatchEvent(this.loadingEvent);
 
-        const endpoint = this.getEndpoint(endpointName);
+        const endpoint = this.getEndpoint(action);
 
         try {
             if (! endpoint) {
                 throw new Error(
-                    `No "${endpointName}" endpoint configured. Add it via setEndpoints(), ` +
-                    `alongside: ${Object.keys(this.config.endpoints || {}).join(', ') || 'none'}.`
+                    `No endpoint configured for the "${action}" action. Point Paver at a ` +
+                    `single endpoint with setEndpoint('/your-endpoint'), or add "${action}" ` +
+                    `to setEndpoints().`
                 );
             }
 
@@ -30,14 +33,14 @@ export default class ApiClient {
                     'Content-Type': 'application/json',
                     ...this.headers,
                 },
-                body: JSON.stringify({ ...this.payload, ...payload }),
+                body: JSON.stringify({ action, ...this.payload, ...payload }),
             });
 
             const body = await response.text();
 
             if (! response.ok) {
                 throw new Error(
-                    `The "${endpointName}" endpoint (${endpoint}) responded ${response.status}. ` +
+                    `The "${action}" action endpoint (${endpoint}) responded ${response.status}. ` +
                     `Response: ${body.slice(0, 500)}`
                 );
             }
@@ -46,7 +49,7 @@ export default class ApiClient {
                 return JSON.parse(body);
             } catch (parseError) {
                 throw new Error(
-                    `The "${endpointName}" endpoint (${endpoint}) did not return JSON. ` +
+                    `The "${action}" action endpoint (${endpoint}) did not return JSON. ` +
                     `Response: ${body.slice(0, 500)}`
                 );
             }

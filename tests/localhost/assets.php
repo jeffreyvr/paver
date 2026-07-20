@@ -101,11 +101,7 @@ class Outro extends RichTextBlock
 
 $paver = Paver::instance();
 
-$paver->api->setEndpoints([
-    'options' => 'assets.php?options',
-    'render' => 'assets.php?render',
-    'fetch' => 'assets.php?fetch',
-]);
+$paver->api->setEndpoint('assets.php?api');
 
 // Both blocks share the same option, so its assets should be deduped.
 $paver->registerBlock(Intro::class);
@@ -115,8 +111,10 @@ $content = [
     ['block' => 'assets_demo.intro', 'data' => ['content' => '<p>Edit me to check the option works.</p>']],
 ];
 
-// Endpoints exit the request, so blocks must be registered above this line.
-require 'endpoints.php';
+// The handler exits the request, so blocks must be registered above this line.
+if (isset($_GET['api'])) {
+    Jeffreyvr\Paver\Endpoints\Handler::run();
+}
 ?>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <body class="flex h-screen">

@@ -69,11 +69,7 @@ class Article extends Block
 
 $paver = Paver::instance();
 
-$paver->api->setEndpoints([
-    'options' => 'lifecycle.php?options',
-    'render' => 'lifecycle.php?render',
-    'fetch' => 'lifecycle.php?fetch',
-]);
+$paver->api->setEndpoint('lifecycle.php?api');
 
 $paver->registerBlock(Article::class);
 
@@ -84,7 +80,9 @@ $content = [
     ]],
 ];
 
-require 'endpoints.php';
+if (isset($_GET['api'])) {
+    Jeffreyvr\Paver\Endpoints\Handler::run();
+}
 ?>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <body class="flex h-screen">
