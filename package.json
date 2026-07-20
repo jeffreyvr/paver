@@ -34,5 +34,8 @@
     "postcss-nested": "^6.0.1",
     "sortablejs": "^1.15.2",
     "tippy.js": "^6.3.7"
+  },
+  "overrides": {
+    "webpack": "5.94.0"
   }
 }
