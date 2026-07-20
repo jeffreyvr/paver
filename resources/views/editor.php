@@ -36,6 +36,13 @@
 <?php echo paver()->loadAssetContent('/css/paver.css'); ?>
 </style>
 
+<?php foreach (paver()->optionAssets('styles') as $style) { ?>
+<link rel="stylesheet" href="<?php echo htmlspecialchars($style['src'], ENT_QUOTES, 'UTF-8'); ?>">
+<?php } ?>
+<?php foreach (paver()->optionAssets('scripts') as $script) { ?>
+<script src="<?php echo htmlspecialchars($script['src'], ENT_QUOTES, 'UTF-8'); ?>"></script>
+<?php } ?>
+
 <script>
     document.addEventListener('alpine:init', () => {
         Alpine.data('Paver', (data) => (

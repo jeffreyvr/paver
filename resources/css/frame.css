@@ -14,6 +14,14 @@ body {
 
 .editor-frame {
   width: 100%;
+  box-sizing: border-box;
+
+  /* A gutter around the page, so it is clear where the canvas starts and
+     stops. The top is deeper to make room for the first block's toolbar,
+     which sits above its block. No viewport units here: the parent sizes
+     the frame from its own scroll height. */
+  background: var(--paver-canvas-background);
+  padding: 45px 16px 16px;
 }
 
 .sortable {
@@ -27,6 +35,8 @@ body {
 } */
 
 .editor-root {
+    /* The page itself, sitting on the canvas background. */
+    background: #fff;
     padding: 0;
     min-height: 300px;
 }
@@ -77,7 +87,7 @@ body {
   }
 
   &:hover::after {
-    border-color: var(--paver-color-primary);
+    border-color: var(--paver-color-outline);
   }
 }
 
@@ -89,7 +99,8 @@ body {
     left: 0;
     right: 0;
     bottom: 0;
-    border: 1px solid var(--paver-color-primary);
+    border: 1px solid var(--paver-color-outline);
+    border-radius: 2px;
     pointer-events: none;
   }
 }
