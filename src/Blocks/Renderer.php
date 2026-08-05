@@ -120,6 +120,10 @@ class Renderer
             $blocks = json_decode($blocks, true);
         }
 
+        if (! is_array($blocks)) {
+            return '';
+        }
+
         $content = '';
 
         foreach ($blocks as $block) {
