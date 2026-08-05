@@ -4,6 +4,7 @@
 - [How binding works](#how-binding-works)
 - [Loading scripts and styles](#loading-scripts-and-styles)
 - [Options backed by a JavaScript library](#options-backed-by-a-javascript-library)
+- [Calling your option's PHP from the browser](#calling-your-options-php-from-the-browser)
 - [Full example: a Summernote rich text option](#full-example-a-summernote-rich-text-option)
 - [Good to know](#good-to-know)
 
@@ -116,6 +117,101 @@ Ship the listener as a file next to your option and enqueue it like any other as
 ```php
 $this->script('my-richtext', '/js/my-richtext.js', ['summernote']);
 ```
+
+## Calling your option's PHP from the browser
+
+Some options cannot be built in the browser alone. An image picker has to read
+the media library, a post picker has to query the database, an icon picker has
+to list what is installed. For these, an option can call **its own public
+methods** on the server and get the return value back as JSON.
+
+The `paver:option-init` event hands you an `api` client to do it:
+
+```js
+const result = await api.resolve(className, method, args, state)
+```
+
+| Argument | What it is |
+| --- | --- |
+| `className` | The fully qualified class name of your option |
+| `method` | The public, non-static method to call on it |
+| `args` | Array of arguments passed to that method |
+| `state` | Optional properties set on the instance before the call |
+
+Paver only resolves classes that extend `Option` or `Block`, and only public
+non-static methods. Everything else is rejected.
+
+Pass the class name from PHP rather than hardcoding it in JavaScript, using the
+attribute bag `container` accepts:
+
+```php
+class MediaOption extends Option
+{
+    public string $type = 'media';
+
+    public function __construct(public string $label, public string $name)
+    {
+        $this->script('media-option', '/js/media-option.js');
+    }
+
+    /** Called from the browser through the resolver. */
+    public function search(string $term = ''): array
+    {
+        return MyMediaLibrary::search($term, limit: 40);
+    }
+
+    public function render(): string
+    {
+        return $this->container(
+            '<div class="media-option"><button type="button">Choose image…</button></div>',
+            ['data-class' => static::class]
+        );
+    }
+}
+```
+
+```js
+document.addEventListener('paver:option-init', (event) => {
+    const { el, type, value, setValue, api } = event.detail;
+
+    if (type !== 'media') return;
+
+    el.querySelector('button').addEventListener('click', async () => {
+        const { result } = await api.resolve(
+            el.dataset.class,
+            'search',
+            [''],
+        );
+
+        // Render `result` however you like, then write the choice back.
+        setValue(result[0].url);
+    });
+});
+```
+
+> **The resolver runs your code on your server.** Read
+> [Security](/docs/{{version}}/security) before exposing a method through it —
+> the arguments come from the browser and a public method on your option is a
+> public endpoint.
+
+### Uploading files
+
+The resolver sends JSON, so it does not carry file uploads. For an upload,
+post the file to your own endpoint and use the resolver for everything around
+it — listing, searching, deleting:
+
+```js
+const body = new FormData();
+body.append('file', file);
+
+const response = await fetch('/my-app/media/upload', { method: 'POST', body });
+const { url } = await response.json();
+
+setValue(url);
+```
+
+Your endpoint owns authentication, validation and file type checks. Paver is
+not in that path.
 
 ## Full example: a Summernote rich text option
 

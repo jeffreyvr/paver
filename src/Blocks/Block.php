@@ -138,7 +138,7 @@ abstract class Block
             }
 
             if (! array_key_exists($option->name, $this->data)) {
-                $this->data[$option->name] = '';
+                $this->data[$option->name] = $option->default;
             }
         }
 

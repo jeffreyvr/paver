@@ -98,6 +98,20 @@
     width: 100%;
     overflow: clip;
 
+    /* Styled here, not left to the host: WordPress styles bare form
+       controls and a plain Laravel app does not. */
+    font-family: var(--paver-font);
+    font-size: var(--paver-font-size);
+    line-height: 1.45;
+    color: var(--paver-color-dark);
+
+    /* A host that never set this overflows the 300px rail. */
+    *,
+    *::before,
+    *::after {
+        box-sizing: border-box;
+    }
+
     /* The backdrop is an overlay, not one of the editor's columns. */
     > div:not(.sidebar):not(.sidebar-backdrop) {
         display: flex;
@@ -154,6 +168,30 @@
     width: 300px;
     border-left: 1px solid var(--paver-border-color);
 
+    /* Sticky only pins the top edge, so a sidebar taller than the viewport
+       hid its last options. Bound it and let the open pane scroll. */
+    .sticky {
+        display: flex;
+        flex-direction: column;
+        top: var(--paver-sticky-offset);
+        max-height: calc(100vh - var(--paver-sticky-offset));
+    }
+
+    .sidebar-tabs {
+        flex-shrink: 0;
+    }
+
+    .section {
+        /* Without this the flex item will not shrink and overflow-y never
+           engages. */
+        min-height: 0;
+        overflow-y: auto;
+
+        /* A visible axis next to a scrolling one computes to auto, so this
+           has to be stated or the pane scrolls sideways too. */
+        overflow-x: clip;
+    }
+
     .block-grid {
         display: grid;
         grid-template-columns: repeat(3, 1fr);
@@ -193,6 +231,201 @@
             }
         }
     }
+
+    /* Option fields. Nested to outrank the bare `input` rules a host ships,
+       and element-only so custom options are styled without knowing any
+       class names. */
+    .option {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+        margin-bottom: 14px;
+
+        &:last-child {
+            margin-bottom: 0;
+        }
+
+        /* Direct child only, so a label wrapping its own control is not
+           caught by it. */
+        > label {
+            margin: 0;
+            font-size: var(--paver-font-size-label);
+            font-weight: 500;
+            color: var(--paver-color-muted);
+        }
+
+        /* One :not() with a list, not four chained: chaining adds up their
+           specificity and cancels the per-type rules below. */
+        input:not([type="checkbox"], [type="radio"], [type="range"], [type="file"]),
+        select,
+        textarea {
+            font: inherit;
+            color: inherit;
+            margin: 0;
+            width: 100%;
+            min-height: var(--paver-field-height);
+            padding: 6px 9px;
+            background-color: var(--paver-field-background);
+            border: none;
+            border-radius: var(--paver-border-radius);
+            outline: none;
+
+            /* Inset, so focus can add a second ring without shifting the box. */
+            box-shadow: inset 0 0 0 1px var(--paver-field-border);
+            transition: box-shadow .15s ease-in-out;
+
+            &:hover:not(:disabled) {
+                box-shadow: inset 0 0 0 1px var(--paver-field-border-hover);
+            }
+
+            &:focus {
+                /* Outer ring too: one recoloured hairline is too quiet. */
+                box-shadow:
+                    inset 0 0 0 1px var(--paver-color-primary),
+                    0 0 0 3px var(--paver-color-outline);
+            }
+
+            &::placeholder {
+                color: var(--paver-color-muted);
+            }
+
+            &:disabled {
+                opacity: .5;
+                cursor: not-allowed;
+            }
+        }
+
+        select {
+            /* The UA arrow cannot be styled, so draw our own. */
+            appearance: none;
+            padding-right: 26px;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 9px center;
+            background-size: 12px;
+        }
+
+        textarea {
+            min-height: 76px;
+            resize: vertical;
+        }
+
+        input[type="color"] {
+            /* The swatch is the control, so padding would frame it twice. */
+            padding: 3px;
+            cursor: pointer;
+        }
+
+        input[type="range"] {
+            width: 100%;
+        }
+
+        input[type="checkbox"],
+        input[type="radio"],
+        input[type="range"] {
+            accent-color: var(--paver-color-primary);
+        }
+
+    /* The text names the control rather than captioning it. */
+    > .inline-label {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: var(--paver-font-size);
+        font-weight: 400;
+        color: inherit;
+        cursor: pointer;
+
+        input {
+            width: 15px;
+            height: 15px;
+            margin: 0;
+            flex-shrink: 0;
+        }
+    }
+
+    /* Segmented control: every choice visible and one click away. */
+    .segmented {
+        display: flex;
+        background-color: var(--paver-color-light);
+        border-radius: var(--paver-border-radius);
+        padding: 2px;
+        gap: 2px;
+
+        label {
+            flex: 1;
+            cursor: pointer;
+        }
+
+        /* Not display:none, so arrow key navigation still works. */
+        input {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            opacity: 0;
+            margin: 0;
+        }
+
+        span {
+            display: block;
+            padding: 4px 8px;
+            border-radius: 3px;
+            text-align: center;
+            font-size: 12px;
+            color: var(--paver-color-muted);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            transition: background-color .12s, color .12s;
+        }
+
+        label:hover span {
+            color: var(--paver-color-dark);
+        }
+
+        input:checked + span {
+            background-color: var(--paver-field-background);
+            color: var(--paver-color-dark);
+            font-weight: 500;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, .08);
+        }
+
+        input:focus-visible + span {
+            box-shadow: 0 0 0 2px var(--paver-color-outline);
+        }
+    }
+
+    &.option-range > label {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: 8px;
+
+        output {
+            font-variant-numeric: tabular-nums;
+            color: var(--paver-color-dark);
+        }
+    }
+
+    /* Swatch and hex field share the value, so either one drives the other. */
+    .color-field {
+        display: flex;
+        gap: 6px;
+
+        input[type="color"] {
+            width: 34px;
+            flex-shrink: 0;
+        }
+
+        input[type="text"] {
+            /* Flex items will not shrink past their intrinsic width without
+               this, which is what pushed the field out of the rail. */
+            min-width: 0;
+            font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+            text-transform: lowercase;
+        }
+    }
+    }
 }
 
 .section {
@@ -224,8 +457,9 @@
         gap: 4px;
         padding: 8px 12px;
 
-        font-weight: bold;
-        font-size: 14px;
+        /* One scale with the tabs: 11px label, 13px the rest. */
+        font-weight: 600;
+        font-size: 13px;
         border-bottom: 1px solid var(--paver-border-color);
     }
 
@@ -237,32 +471,6 @@
         border: 1px solid var(--paver-border-color);
     }
 
-    .search-blocks {
-        width: 100%;
-        margin-bottom: 10px;
-    }
-
-    .option {
-        margin-bottom: 4px;
-        display: block;
-
-        label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: bold;
-        }
-
-        input[type="text"],
-        input[type="number"],
-        textarea,
-        select {
-            border: 1px solid var(--paver-border-color);
-            border-radius: var(--paver-border-radius);
-            width: 100%;
-            /* padding: 5px; */
-            margin-bottom: 10px;
-        }
-    }
 }
 
 .sortable-item {

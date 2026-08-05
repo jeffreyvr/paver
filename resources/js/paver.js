@@ -180,6 +180,9 @@ window.Paver = function (data) {
                             el,
                             name,
                             type: el.getAttribute('data-paver-option'),
+                            // So an option can call its own PHP without
+                            // reaching into Alpine for the client.
+                            api: this.api,
                             get value() {
                                 return name ? scope()[name] : undefined
                             },

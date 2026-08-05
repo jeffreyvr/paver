@@ -1,8 +1,14 @@
 <?php
 
 use Jeffreyvr\Paver\Blocks\Block;
+use Jeffreyvr\Paver\Blocks\Options\Checkbox;
+use Jeffreyvr\Paver\Blocks\Options\Color;
 use Jeffreyvr\Paver\Blocks\Options\Input;
+use Jeffreyvr\Paver\Blocks\Options\Link;
+use Jeffreyvr\Paver\Blocks\Options\Number;
 use Jeffreyvr\Paver\Blocks\Options\Option;
+use Jeffreyvr\Paver\Blocks\Options\RadioGroup;
+use Jeffreyvr\Paver\Blocks\Options\Range;
 use Jeffreyvr\Paver\Blocks\Options\Select;
 use Jeffreyvr\Paver\Blocks\Options\Textarea;
 
@@ -85,6 +91,115 @@ describe('Select Option', function () {
         $html = $select->render();
 
         expect($html)->toContain('class="form-select"');
+    });
+});
+
+describe('Checkbox Option', function () {
+    it('creates via make method', function () {
+        expect(Checkbox::make('Featured', 'featured'))->toBeInstanceOf(Checkbox::class);
+    });
+
+    it('renders an inline checkbox with a false default', function () {
+        $checkbox = new Checkbox('Featured', 'featured');
+        $html = $checkbox->render();
+
+        expect($checkbox->default)->toBeFalse();
+        expect($html)->toContain('type="checkbox"');
+        expect($html)->toContain('x-model="featured"');
+        expect($html)->toContain('paver__inline-label');
+        expect($html)->toContain('Featured');
+    });
+});
+
+describe('Number Option', function () {
+    it('renders a number input with bounds', function () {
+        $number = Number::make('Quantity', 'quantity', min: 1, max: 12, step: 1);
+        $html = $number->render();
+
+        expect($html)->toContain('type="number"');
+        expect($html)->toContain('x-model="quantity"');
+        expect($html)->toContain('min="1"');
+        expect($html)->toContain('max="12"');
+        expect($html)->toContain('step="1"');
+    });
+
+    it('omits null bounds', function () {
+        $html = Number::make('Count', 'count')->render();
+
+        expect($html)->toContain('type="number"');
+        expect($html)->not->toContain('min=');
+        expect($html)->not->toContain('max=');
+        expect($html)->not->toContain('step=');
+    });
+});
+
+describe('Range Option', function () {
+    it('renders a slider with a live output and suffix', function () {
+        $range = Range::make('Scale', 'scale', min: 50, max: 150, step: 5, suffix: '%');
+        $html = $range->render();
+
+        expect($html)->toContain('type="range"');
+        expect($html)->toContain('x-model="scale"');
+        expect($html)->toContain('min="50"');
+        expect($html)->toContain('max="150"');
+        expect($html)->toContain('step="5"');
+        expect($html)->toContain('paver__option-range');
+        expect($html)->toContain('<output');
+        expect($html)->toContain('x-text="`${scale}%`"');
+    });
+});
+
+describe('Color Option', function () {
+    it('renders a swatch and hex field bound to the same model', function () {
+        $color = Color::make('Accent', 'accent');
+        $html = $color->render();
+
+        expect($color->default)->toBe('#000000');
+        expect($html)->toContain('type="color"');
+        expect($html)->toContain('paver__color-field');
+        expect(substr_count($html, 'x-model="accent"'))->toBe(2);
+    });
+});
+
+describe('Link Option', function () {
+    it('renders url, text, and new-tab fields on a structured value', function () {
+        $link = Link::make('CTA', 'cta');
+        $html = $link->render();
+
+        expect($link->default)->toBe(['url' => '', 'text' => '', 'newTab' => false]);
+        expect($html)->toContain('x-model="cta.url"');
+        expect($html)->toContain('x-model="cta.text"');
+        expect($html)->toContain('x-model="cta.newTab"');
+        expect($html)->toContain('type="url"');
+        expect($html)->toContain('Open in a new tab');
+    });
+});
+
+describe('RadioGroup Option', function () {
+    it('renders a segmented group of radios', function () {
+        $group = RadioGroup::make('Layout', 'layout', [
+            'stacked' => 'Stacked',
+            'inline' => 'Inline',
+        ]);
+        $html = $group->render();
+
+        expect($html)->toContain('paver__segmented');
+        expect($html)->toContain('type="radio"');
+        expect($html)->toContain('x-model="layout"');
+        expect($html)->toContain('value="stacked"');
+        expect($html)->toContain('value="inline"');
+        expect($html)->toContain('Stacked');
+        expect($html)->toContain('Inline');
+    });
+
+    it('escapes option values and labels', function () {
+        $html = RadioGroup::make('Pick', 'pick', [
+            'a"b' => '<Bold>',
+        ])->render();
+
+        expect($html)->toContain('value="a&quot;b"');
+        expect($html)->toContain('&lt;Bold&gt;');
+        expect($html)->not->toContain('<Bold>');
     });
 });
 
