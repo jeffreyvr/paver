@@ -7,6 +7,7 @@ use Jeffreyvr\Paver\Blocks\Options\Checkbox;
 use Jeffreyvr\Paver\Blocks\Options\Input;
 use Jeffreyvr\Paver\Blocks\Options\Link;
 use Jeffreyvr\Paver\Blocks\Options\Textarea;
+use Jeffreyvr\Paver\Blocks\Renderer;
 
 beforeEach(function () {
     paver()->blocks = [];
@@ -147,6 +148,12 @@ describe('Block Renderer', function () {
         $block->renderer('editor')->render();
 
         expect($block->isInEditor)->toBeTrue();
+    });
+
+    it('renders nothing when blocks are null or empty', function () {
+        expect(Renderer::blocks(null))->toBe('');
+        expect(Renderer::blocks([]))->toBe('');
+        expect(Renderer::blocks(''))->toBe('');
     });
 });
 
