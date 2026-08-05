@@ -24,5 +24,7 @@
     --paver-field-padding-y: 4px;
     --paver-field-padding-x: 8px;
 
+    --paver-topbar-height: 42px;
+
     --paver-sticky-offset: 0px;
   }
