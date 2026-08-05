@@ -4,7 +4,6 @@ namespace Jeffreyvr\Paver\Blocks\Options;
 
 class Link extends Option
 {
-    /** One structured value, so a block reads $data['name']['url']. */
     public mixed $default = ['url' => '', 'text' => '', 'newTab' => false];
 
     public function __construct(

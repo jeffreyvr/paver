@@ -27,7 +27,6 @@ class Range extends Option
         $attributeString = $this->makeAttributeString(array_merge($bounds, ['type' => 'range']));
         $suffix = htmlspecialchars($this->suffix, ENT_QUOTES, 'UTF-8');
 
-        // A slider with no readout is guesswork, so the value sits in the caption.
         return <<<HTML
             <div class="paver__option paver__option-range">
                 <label>

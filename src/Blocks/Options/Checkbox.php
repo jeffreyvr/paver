@@ -15,7 +15,6 @@ class Checkbox extends Option
     {
         $attributeString = $this->makeAttributeString(['type' => 'checkbox']);
 
-        // The label wraps the input: for a checkbox the text is the hit target.
         return <<<HTML
             <div class="paver__option">
                 <label class="paver__inline-label">

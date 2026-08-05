@@ -99,21 +99,17 @@
     width: 100%;
     overflow: clip;
 
-    /* Styled here, not left to the host: WordPress styles bare form
-       controls and a plain Laravel app does not. */
     font-family: var(--paver-font);
     font-size: var(--paver-font-size);
     line-height: 1.45;
     color: var(--paver-color-dark);
 
-    /* A host that never set this overflows the 300px rail. */
     *,
     *::before,
     *::after {
         box-sizing: border-box;
     }
 
-    /* The backdrop is an overlay, not one of the editor's columns. */
     > div:not(.sidebar):not(.sidebar-backdrop) {
         display: flex;
         flex-direction: column;
@@ -169,8 +165,6 @@
     width: 300px;
     border-left: 1px solid var(--paver-border-color);
 
-    /* Sticky only pins the top edge, so a sidebar taller than the viewport
-       hid its last options. Bound it and let the open pane scroll. */
     .sticky {
         display: flex;
         flex-direction: column;
@@ -183,13 +177,8 @@
     }
 
     .section {
-        /* Without this the flex item will not shrink and overflow-y never
-           engages. */
         min-height: 0;
         overflow-y: auto;
-
-        /* A visible axis next to a scrolling one computes to auto, so this
-           has to be stated or the pane scrolls sideways too. */
         overflow-x: clip;
     }
 
@@ -233,11 +222,6 @@
         }
     }
 
-    /* Option fields. Nested to outrank the bare `input` rules a host ships
-       (WordPress forms.css uses 40px min-height and a 2.7 line-height on
-       selects), and element-only so custom options pick this up without
-       knowing any class names. Every size property WP touches is reset
-       explicitly: min-height alone is not enough. */
     .option {
         display: flex;
         flex-direction: column;
@@ -248,8 +232,6 @@
             margin-bottom: 0;
         }
 
-        /* Direct child only, so a label wrapping its own control is not
-           caught by it. */
         > label {
             margin: 0;
             padding: 0;
@@ -259,14 +241,9 @@
             color: var(--paver-color-muted);
         }
 
-        /* One :not() with a list, not four chained: chaining adds up their
-           specificity and cancels the per-type rules below. */
         input:not([type="checkbox"], [type="radio"], [type="range"], [type="file"]),
         select,
         textarea {
-            /* Spell out font pieces: `font: inherit` alone still leaves room
-               for a host's line-height / 14–16px form rules to show through
-               on some controls (select, date). */
             font-family: var(--paver-font);
             font-size: var(--paver-font-size);
             font-weight: 400;
@@ -284,8 +261,6 @@
             border-radius: var(--paver-border-radius);
             outline: none;
             vertical-align: middle;
-
-            /* Inset, so focus can add a second ring without shifting the box. */
             box-shadow: inset 0 0 0 1px var(--paver-field-border);
             transition: box-shadow .15s ease-in-out;
 
@@ -294,7 +269,6 @@
             }
 
             &:focus {
-                /* Outer ring too: one recoloured hairline is too quiet. */
                 box-shadow:
                     inset 0 0 0 1px var(--paver-color-primary),
                     0 0 0 2px var(--paver-color-outline);
@@ -312,7 +286,6 @@
         }
 
         select {
-            /* The UA / host arrow cannot be styled, so draw our own. */
             appearance: none;
             -webkit-appearance: none;
             padding-right: 24px;
@@ -334,7 +307,6 @@
         }
 
         input[type="color"] {
-            /* The swatch is the control, so padding would frame it twice. */
             padding: 2px;
             cursor: pointer;
         }
@@ -355,8 +327,6 @@
             accent-color: var(--paver-color-primary);
         }
 
-        /* Date fields pack a spinner + edit area; kill the host's tall
-           ::-webkit-datetime-edit line-height so they match text inputs. */
         input[type="date"],
         input[type="datetime-local"],
         input[type="time"],
@@ -373,7 +343,6 @@
             }
         }
 
-    /* The text names the control rather than captioning it. */
     > .inline-label {
         display: flex;
         align-items: center;
@@ -384,8 +353,6 @@
         color: inherit;
         cursor: pointer;
 
-        /* WP paints checkboxes at 1.5625rem with a large :before check.
-           Reset the control and hide the pseudo so accent-color can work. */
         input[type="checkbox"],
         input[type="radio"] {
             appearance: none;
@@ -437,7 +404,6 @@
         }
     }
 
-    /* Segmented control: every choice visible and one click away. */
     .segmented {
         display: flex;
         background-color: var(--paver-color-light);
@@ -452,7 +418,6 @@
             cursor: pointer;
         }
 
-        /* Not display:none, so arrow key navigation still works. */
         input {
             position: absolute;
             width: 1px;
@@ -510,7 +475,6 @@
         }
     }
 
-    /* Swatch and hex field share the value, so either one drives the other. */
     .color-field {
         display: flex;
         gap: 6px;
@@ -523,8 +487,6 @@
         }
 
         input[type="text"] {
-            /* Flex items will not shrink past their intrinsic width without
-               this, which is what pushed the field out of the rail. */
             min-width: 0;
             font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
             font-size: 12px;

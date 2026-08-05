@@ -1,11 +1,3 @@
-/*
- * Tippy mounts on document.body, outside .paver__container. Hosts (WordPress
- * admin especially) bring their own form and stacking styles, so the theme
- * sets every property that matters and sits above the admin chrome.
- *
- * Class names stay unprefixed: postcss-prefixer ignores /tippy/.
- */
-
 [data-tippy-root] {
     z-index: 1000001;
 }

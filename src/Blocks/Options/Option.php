@@ -12,7 +12,6 @@ abstract class Option
 
     public string $wrapper = '_INJECT_';
 
-    /** What the value starts as when the block does not declare one. */
     public mixed $default = '';
 
     /**

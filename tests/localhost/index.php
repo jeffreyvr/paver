@@ -15,14 +15,6 @@ use Jeffreyvr\Paver\Paver;
 
 require __DIR__ . '/../../vendor/autoload.php';
 
-/**
- * Every option the sidebar can render, on one block.
- *
- * This is the harness for the sidebar's field styling: it puts each input
- * type, the empty and disabled states, an option that only appears once
- * another is set, and a label too long for the 300px rail side by side, so
- * the whole surface can be judged at once instead of one field at a time.
- */
 class AllOptions extends Block
 {
     public string $name = 'All options';
@@ -39,8 +31,6 @@ class AllOptions extends Block
         'publishedOn' => '',
         'accent' => '#0891b2',
         'scale' => '100',
-        // 'featured' and 'cta' are left out on purpose: Checkbox and Link
-        // seed them from their own defaults.
         'badge' => "Editor's pick",
         'reference' => 'paver.all-options',
     ];
@@ -50,9 +40,6 @@ class AllOptions extends Block
         return [
             Input::make('Heading', 'heading'),
             Textarea::make('Summary', 'summary', ['rows' => '3']),
-
-            // Same shape, two controls: the segmented group shows both
-            // choices, the select hides them until opened.
             RadioGroup::make('Layout', 'layout', [
                 'stacked' => 'Stacked',
                 'inline' => 'Inline',
@@ -67,17 +54,10 @@ class AllOptions extends Block
             Range::make('Scale', 'scale', min: 50, max: 150, step: 5, suffix: '%'),
             Color::make('Accent color', 'accent'),
             Link::make('Call to action', 'cta'),
-
-            // Types the old `input[type=text], input[type=number]` selector
-            // missed entirely, which is half the reason this block exists.
             Input::make('Email address', 'email', ['type' => 'email', 'placeholder' => 'name@example.com']),
             Input::make('Published on', 'publishedOn', ['type' => 'date']),
             Checkbox::make('Featured', 'featured'),
-
-            // Only rendered while Featured is ticked.
             Input::make('Badge text', 'badge')->condition('featured'),
-
-            // A label with nowhere to wrap, and a field nobody can type in.
             Input::make('Block reference used at registration', 'reference', ['disabled' => 'disabled']),
         ];
     }
@@ -129,8 +109,6 @@ class AllOptions extends Block
                 .' class="mt-4 inline-block rounded px-3 py-1.5 text-sm font-medium text-white"'
                 .' style="background-color: '.$accent.'">'.$escape($text).'</a>';
         }
-
-        // Interpolation cannot call a closure, so escape ahead of the heredoc.
         $heading = $escape($this->data['heading']);
         $summary = $escape($this->data['summary']);
 
@@ -234,8 +212,6 @@ if(isset($_GET['content'])) {
     $content[] = ['block' => 'paver.example'];
 }
 
-// index.php?options-demo drops the block straight onto the canvas, so the
-// sidebar can be opened on it without inserting it by hand first.
 if(isset($_GET['options-demo'])) {
     $content[] = ['block' => 'paver.all-options'];
 }

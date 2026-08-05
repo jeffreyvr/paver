@@ -13,8 +13,6 @@ document.addEventListener('alpine:init', () => {
                 return
             }
 
-            // Theme styles live in _tooltip.css. zIndex clears the WP admin
-            // bar (99999) and the expanded editor overlay (100000).
             instance = tippy(el, {
                 content,
                 theme: 'paver',

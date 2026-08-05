@@ -18,8 +18,6 @@ class Color extends Option
     {
         $attributeString = $this->makeAttributeString(['type' => 'color']);
 
-        // Both controls bind the same value, so the swatch and the hex field
-        // follow each other.
         return <<<HTML
             <div class="paver__option">
                 <label>{$this->label}</label>

@@ -11,29 +11,18 @@
     --paver-toolbar-divider: #e5e7eb;
     --paver-color-outline: rgba(8, 145, 178, .45);
 
-    /* The editor sets its own type so it reads the same embedded in the
-       WordPress admin as it does in a bare Laravel app, neither of which it
-       can assume anything about. Sized for a 300px rail, not WP's 40px
-       form controls. */
     --paver-font: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
     --paver-font-size: 12.5px;
     --paver-font-size-label: 11px;
 
-    /* Labels, placeholders, the select chevron: chrome around a value. */
     --paver-color-muted: #6b7280;
 
-    /* An interactive edge reads stronger than a structural divider, so
-       fields do not share --paver-border-color with the panel rules. */
     --paver-field-border: #d1d5db;
     --paver-field-border-hover: #9ca3af;
     --paver-field-background: #fff;
-    /* Fixed height (not only min): hosts like WP set min-height 40px and a
-       tall line-height that would otherwise win the visual size. */
     --paver-field-height: 28px;
     --paver-field-padding-y: 4px;
     --paver-field-padding-x: 8px;
 
-    /* Room for a host to clear its own fixed header (the WordPress admin
-       bar is 32px) before the sidebar pins. */
     --paver-sticky-offset: 0px;
   }

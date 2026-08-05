@@ -19,8 +19,6 @@ class RadioGroup extends Option
 
         $segments = '';
 
-        // Real radios, visually replaced by their labels: arrow key navigation
-        // and the checked state come from the browser.
         foreach ($this->options as $value => $label) {
             $value = htmlspecialchars((string) $value, ENT_QUOTES, 'UTF-8');
             $label = htmlspecialchars((string) $label, ENT_QUOTES, 'UTF-8');
