@@ -2,6 +2,7 @@
 @import './_utilities.css';
 @import './_animations.css';
 @import 'tippy.js/dist/tippy.css';
+@import './_tooltip.css';
 
 [x-cloak] {
     display: none;
@@ -232,14 +233,16 @@
         }
     }
 
-    /* Option fields. Nested to outrank the bare `input` rules a host ships,
-       and element-only so custom options are styled without knowing any
-       class names. */
+    /* Option fields. Nested to outrank the bare `input` rules a host ships
+       (WordPress forms.css uses 40px min-height and a 2.7 line-height on
+       selects), and element-only so custom options pick this up without
+       knowing any class names. Every size property WP touches is reset
+       explicitly: min-height alone is not enough. */
     .option {
         display: flex;
         flex-direction: column;
-        gap: 5px;
-        margin-bottom: 14px;
+        gap: 4px;
+        margin-bottom: 12px;
 
         &:last-child {
             margin-bottom: 0;
@@ -249,8 +252,10 @@
            caught by it. */
         > label {
             margin: 0;
+            padding: 0;
             font-size: var(--paver-font-size-label);
             font-weight: 500;
+            line-height: 1.3;
             color: var(--paver-color-muted);
         }
 
@@ -259,16 +264,26 @@
         input:not([type="checkbox"], [type="radio"], [type="range"], [type="file"]),
         select,
         textarea {
-            font: inherit;
-            color: inherit;
+            /* Spell out font pieces: `font: inherit` alone still leaves room
+               for a host's line-height / 14–16px form rules to show through
+               on some controls (select, date). */
+            font-family: var(--paver-font);
+            font-size: var(--paver-font-size);
+            font-weight: 400;
+            line-height: 1.25;
+            color: var(--paver-color-dark);
             margin: 0;
             width: 100%;
+            max-width: 100%;
+            height: var(--paver-field-height);
             min-height: var(--paver-field-height);
-            padding: 6px 9px;
+            max-height: var(--paver-field-height);
+            padding: var(--paver-field-padding-y) var(--paver-field-padding-x);
             background-color: var(--paver-field-background);
             border: none;
             border-radius: var(--paver-border-radius);
             outline: none;
+            vertical-align: middle;
 
             /* Inset, so focus can add a second ring without shifting the box. */
             box-shadow: inset 0 0 0 1px var(--paver-field-border);
@@ -282,11 +297,12 @@
                 /* Outer ring too: one recoloured hairline is too quiet. */
                 box-shadow:
                     inset 0 0 0 1px var(--paver-color-primary),
-                    0 0 0 3px var(--paver-color-outline);
+                    0 0 0 2px var(--paver-color-outline);
             }
 
             &::placeholder {
                 color: var(--paver-color-muted);
+                opacity: 1;
             }
 
             &:disabled {
@@ -296,28 +312,41 @@
         }
 
         select {
-            /* The UA arrow cannot be styled, so draw our own. */
+            /* The UA / host arrow cannot be styled, so draw our own. */
             appearance: none;
-            padding-right: 26px;
+            -webkit-appearance: none;
+            padding-right: 24px;
+            background-color: var(--paver-field-background);
             background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
             background-repeat: no-repeat;
-            background-position: right 9px center;
-            background-size: 12px;
+            background-position: right 8px center;
+            background-size: 11px;
+            cursor: pointer;
         }
 
         textarea {
-            min-height: 76px;
+            height: auto;
+            max-height: none;
+            min-height: 64px;
+            padding: 6px 8px;
+            line-height: 1.4;
             resize: vertical;
         }
 
         input[type="color"] {
             /* The swatch is the control, so padding would frame it twice. */
-            padding: 3px;
+            padding: 2px;
             cursor: pointer;
         }
 
         input[type="range"] {
             width: 100%;
+            height: auto;
+            min-height: 0;
+            max-height: none;
+            padding: 0;
+            box-shadow: none;
+            background: transparent;
         }
 
         input[type="checkbox"],
@@ -326,21 +355,85 @@
             accent-color: var(--paver-color-primary);
         }
 
+        /* Date fields pack a spinner + edit area; kill the host's tall
+           ::-webkit-datetime-edit line-height so they match text inputs. */
+        input[type="date"],
+        input[type="datetime-local"],
+        input[type="time"],
+        input[type="month"],
+        input[type="week"] {
+            &::-webkit-datetime-edit {
+                line-height: 1.25;
+                padding: 0;
+            }
+
+            &::-webkit-calendar-picker-indicator {
+                cursor: pointer;
+                opacity: .65;
+            }
+        }
+
     /* The text names the control rather than captioning it. */
     > .inline-label {
         display: flex;
         align-items: center;
-        gap: 8px;
+        gap: 7px;
         font-size: var(--paver-font-size);
         font-weight: 400;
+        line-height: 1.3;
         color: inherit;
         cursor: pointer;
 
-        input {
-            width: 15px;
-            height: 15px;
+        /* WP paints checkboxes at 1.5625rem with a large :before check.
+           Reset the control and hide the pseudo so accent-color can work. */
+        input[type="checkbox"],
+        input[type="radio"] {
+            appearance: none;
+            -webkit-appearance: none;
+            width: 14px;
+            height: 14px;
+            min-width: 14px;
+            min-height: 14px;
+            max-width: 14px;
+            max-height: 14px;
             margin: 0;
+            padding: 0;
             flex-shrink: 0;
+            border: none;
+            border-radius: 3px;
+            background-color: var(--paver-field-background);
+            box-shadow: inset 0 0 0 1px var(--paver-field-border);
+            accent-color: var(--paver-color-primary);
+            cursor: pointer;
+            vertical-align: middle;
+
+            &::before {
+                content: none !important;
+                display: none !important;
+            }
+
+            &:checked {
+                background-color: var(--paver-color-primary);
+                box-shadow: none;
+                background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%23fff' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3.5 8.5 6.5 11.5 12.5 4.5'/%3E%3C/svg%3E");
+                background-repeat: no-repeat;
+                background-position: center;
+                background-size: 10px;
+            }
+
+            &:focus {
+                box-shadow:
+                    inset 0 0 0 1px var(--paver-color-primary),
+                    0 0 0 2px var(--paver-color-outline);
+            }
+        }
+
+        input[type="radio"] {
+            border-radius: 50%;
+
+            &:checked {
+                background-image: radial-gradient(circle, #fff 0 35%, transparent 40%);
+            }
         }
     }
 
@@ -354,6 +447,8 @@
 
         label {
             flex: 1;
+            min-width: 0;
+            margin: 0;
             cursor: pointer;
         }
 
@@ -362,16 +457,23 @@
             position: absolute;
             width: 1px;
             height: 1px;
+            min-width: 0;
+            min-height: 0;
+            max-width: none;
+            max-height: none;
             opacity: 0;
             margin: 0;
+            padding: 0;
+            box-shadow: none;
         }
 
         span {
             display: block;
-            padding: 4px 8px;
+            padding: 3px 6px;
             border-radius: 3px;
             text-align: center;
-            font-size: 12px;
+            font-size: 11.5px;
+            line-height: 1.3;
             color: var(--paver-color-muted);
             white-space: nowrap;
             overflow: hidden;
@@ -403,6 +505,7 @@
 
         output {
             font-variant-numeric: tabular-nums;
+            font-size: var(--paver-font-size);
             color: var(--paver-color-dark);
         }
     }
@@ -411,10 +514,12 @@
     .color-field {
         display: flex;
         gap: 6px;
+        align-items: stretch;
 
         input[type="color"] {
-            width: 34px;
+            width: 28px;
             flex-shrink: 0;
+            padding: 2px;
         }
 
         input[type="text"] {
@@ -422,6 +527,7 @@
                this, which is what pushed the field out of the rail. */
             min-width: 0;
             font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+            font-size: 12px;
             text-transform: lowercase;
         }
     }
