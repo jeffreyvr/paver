@@ -228,22 +228,24 @@ window.Paver = function (data) {
             Shortcuts.expand(() => this.toggleExpand())
             Shortcuts.exit(() => this.handleEscape())
 
-            Sortable.create(this.$refs.blocksInserter, {
-                ghostClass: "paver__sortable-ghost",
-                chosenClass: "paver__sortable-chosen",
-                dragClass: "paver__sortable-drag",
-                group: {
-                    name: 'shared',
-                    pull: 'clone',
-                    put: false,
-                    revertClone: false
-                },
-                sort: false,
-                animation: 150,
-                onStart: (evt) => {
-                    evt.clone.setAttribute('x-ignore', '')
-                },
-            })
+            if (this.$refs.blocksInserter) {
+                Sortable.create(this.$refs.blocksInserter, {
+                    ghostClass: "paver__sortable-ghost",
+                    chosenClass: "paver__sortable-chosen",
+                    dragClass: "paver__sortable-drag",
+                    group: {
+                        name: 'shared',
+                        pull: 'clone',
+                        put: false,
+                        revertClone: false
+                    },
+                    sort: false,
+                    animation: 150,
+                    onStart: (evt) => {
+                        evt.clone.setAttribute('x-ignore', '')
+                    },
+                })
+            }
         },
 
         listeners() {
@@ -376,6 +378,10 @@ window.Paver = function (data) {
         },
 
         determineVisibleInsertableBlocks() {
+            if (! this.$refs.blocksInserter) {
+                return
+            }
+
             const searchTerm = this.blockInserter.search.trim().toLowerCase()
             const allowedBlocks = this.allowedBlocks.length ? this.allowedBlocks : null
             const blocks = this.$refs.blocksInserter.querySelectorAll('.paver__block-handle')

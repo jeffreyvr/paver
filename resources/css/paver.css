@@ -125,6 +125,10 @@
     }
 
     &.docked {
+        .sidebar-shell {
+            width: 100%;
+        }
+
         .sidebar {
             min-width: 0;
             width: 100%;
