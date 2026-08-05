@@ -3,7 +3,9 @@
 use Jeffreyvr\Paver\Blocks\Block;
 use Jeffreyvr\Paver\Blocks\BlockFactory;
 use Jeffreyvr\Paver\Blocks\Example;
+use Jeffreyvr\Paver\Blocks\Options\Checkbox;
 use Jeffreyvr\Paver\Blocks\Options\Input;
+use Jeffreyvr\Paver\Blocks\Options\Link;
 use Jeffreyvr\Paver\Blocks\Options\Textarea;
 
 beforeEach(function () {
@@ -167,6 +169,28 @@ describe('Option data seeding', function () {
 
         expect($block->data)->toHaveKeys(['title', 'content']);
         expect($block->data['title'])->toBe('');
+    });
+
+    it('seeds each option from its own default', function () {
+        $block = new class extends Block
+        {
+            public static string $reference = 'test.seeding-defaults';
+
+            public function options()
+            {
+                return [
+                    Input::make('Title', 'title'),
+                    Checkbox::make('Featured', 'featured'),
+                    Link::make('CTA', 'cta'),
+                ];
+            }
+        };
+
+        $block->seedDataFromOptions();
+
+        expect($block->data['title'])->toBe('');
+        expect($block->data['featured'])->toBeFalse();
+        expect($block->data['cta'])->toBe(['url' => '', 'text' => '', 'newTab' => false]);
     });
 
     it('never overwrites existing data', function () {

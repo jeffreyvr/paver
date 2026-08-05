@@ -180,6 +180,7 @@ window.Paver = function (data) {
                             el,
                             name,
                             type: el.getAttribute('data-paver-option'),
+                            api: this.api,
                             get value() {
                                 return name ? scope()[name] : undefined
                             },

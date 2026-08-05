@@ -10,6 +10,7 @@
 - [View templates](/docs/{{version}}/view-templates)
 - [Rendering](/docs/{{version}}/rendering)
 - [Storing](/docs/{{version}}/storing)
+- [Security](/docs/{{version}}/security)
 
 ### Framework agnostic
 - [Installation](/docs/{{version}}/framework-agnostic-installation)

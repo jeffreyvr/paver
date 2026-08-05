@@ -10,4 +10,19 @@
     --paver-toolbar-background: #fff;
     --paver-toolbar-divider: #e5e7eb;
     --paver-color-outline: rgba(8, 145, 178, .45);
+
+    --paver-font: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    --paver-font-size: 12.5px;
+    --paver-font-size-label: 11px;
+
+    --paver-color-muted: #6b7280;
+
+    --paver-field-border: #d1d5db;
+    --paver-field-border-hover: #9ca3af;
+    --paver-field-background: #fff;
+    --paver-field-height: 28px;
+    --paver-field-padding-y: 4px;
+    --paver-field-padding-x: 8px;
+
+    --paver-sticky-offset: 0px;
   }

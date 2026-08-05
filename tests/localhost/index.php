@@ -2,10 +2,129 @@
 
 use Jeffreyvr\Paver\Blocks\Block;
 use Jeffreyvr\Paver\Blocks\Example;
+use Jeffreyvr\Paver\Blocks\Options\Checkbox;
+use Jeffreyvr\Paver\Blocks\Options\Color;
+use Jeffreyvr\Paver\Blocks\Options\Input;
+use Jeffreyvr\Paver\Blocks\Options\Link;
+use Jeffreyvr\Paver\Blocks\Options\Number;
+use Jeffreyvr\Paver\Blocks\Options\RadioGroup;
+use Jeffreyvr\Paver\Blocks\Options\Range;
 use Jeffreyvr\Paver\Blocks\Options\Select;
+use Jeffreyvr\Paver\Blocks\Options\Textarea;
 use Jeffreyvr\Paver\Paver;
 
 require __DIR__ . '/../../vendor/autoload.php';
+
+class AllOptions extends Block
+{
+    public string $name = 'All options';
+
+    public static string $reference = 'paver.all-options';
+
+    public array $data = [
+        'heading' => 'Every option type',
+        'summary' => 'Change anything in the sidebar and it lands here.',
+        'layout' => 'stacked',
+        'postType' => 'post',
+        'quantity' => '3',
+        'email' => '',
+        'publishedOn' => '',
+        'accent' => '#0891b2',
+        'scale' => '100',
+        'badge' => "Editor's pick",
+        'reference' => 'paver.all-options',
+    ];
+
+    public function options()
+    {
+        return [
+            Input::make('Heading', 'heading'),
+            Textarea::make('Summary', 'summary', ['rows' => '3']),
+            RadioGroup::make('Layout', 'layout', [
+                'stacked' => 'Stacked',
+                'inline' => 'Inline',
+            ]),
+            Select::make('Post type', 'postType', [
+                'post' => 'Posts',
+                'page' => 'Pages',
+                'product' => 'Products',
+            ]),
+
+            Number::make('Quantity', 'quantity', min: 1, max: 12),
+            Range::make('Scale', 'scale', min: 50, max: 150, step: 5, suffix: '%'),
+            Color::make('Accent color', 'accent'),
+            Link::make('Call to action', 'cta'),
+            Input::make('Email address', 'email', ['type' => 'email', 'placeholder' => 'name@example.com']),
+            Input::make('Published on', 'publishedOn', ['type' => 'date']),
+            Checkbox::make('Featured', 'featured'),
+            Input::make('Badge text', 'badge')->condition('featured'),
+            Input::make('Block reference used at registration', 'reference', ['disabled' => 'disabled']),
+        ];
+    }
+
+    public function render()
+    {
+        $escape = fn ($value) => htmlspecialchars((string) $value, ENT_QUOTES, 'UTF-8');
+
+        $accent = $escape($this->data['accent'] ?: '#0891b2');
+        $inline = ($this->data['layout'] ?? 'stacked') === 'inline';
+
+        $badge = ! empty($this->data['featured'])
+            ? '<span class="rounded-full px-2 py-0.5 text-xs font-medium text-white" style="background-color: '.$accent.'">'
+                .$escape($this->data['badge']).'</span>'
+            : '';
+
+        $fields = [
+            'Layout' => $this->data['layout'],
+            'Post type' => $this->data['postType'],
+            'Quantity' => $this->data['quantity'],
+            'Email address' => $this->data['email'],
+            'Published on' => $this->data['publishedOn'],
+            'Scale' => $this->data['scale'] !== '' ? $this->data['scale'].'%' : '',
+        ];
+
+        $rows = '';
+
+        foreach ($fields as $label => $value) {
+            $value = trim((string) $value) === ''
+                ? '<span class="text-gray-400 italic">not set</span>'
+                : $escape($value);
+
+            $rows .= '<div class="flex justify-between gap-4 border-b border-gray-100 py-1.5">'
+                .'<dt class="text-gray-500">'.$escape($label).'</dt>'
+                .'<dd class="font-medium">'.$value.'</dd>'
+                .'</div>';
+        }
+
+        $listClass = $inline ? 'grid grid-cols-2 gap-x-8' : '';
+
+        $link = $this->data['cta'] ?? [];
+        $cta = '';
+
+        if (trim((string) ($link['url'] ?? '')) !== '') {
+            $target = ! empty($link['newTab']) ? ' target="_blank" rel="noopener"' : '';
+            $text = trim((string) ($link['text'] ?? '')) !== '' ? $link['text'] : $link['url'];
+
+            $cta = '<a href="'.$escape($link['url']).'"'.$target
+                .' class="mt-4 inline-block rounded px-3 py-1.5 text-sm font-medium text-white"'
+                .' style="background-color: '.$accent.'">'.$escape($text).'</a>';
+        }
+        $heading = $escape($this->data['heading']);
+        $summary = $escape($this->data['summary']);
+
+        return <<<HTML
+            <div class="p-6" style="border-top: 3px solid {$accent}">
+                <div class="flex items-center gap-3">
+                    <h2 class="text-xl font-semibold">{$heading}</h2>
+                    {$badge}
+                </div>
+                <p class="mt-1 text-gray-600">{$summary}</p>
+                <dl class="mt-4 text-sm {$listClass}">{$rows}</dl>
+                {$cta}
+            </div>
+        HTML;
+    }
+}
 
 /**
  * A two column layout, for testing nested blocks.
@@ -85,11 +204,16 @@ HTML;
 $paver->registerBlock(Example::class);
 $paver->registerBlock(Columns::class);
 $paver->registerBlock(Column::class);
+$paver->registerBlock(AllOptions::class);
 
 $content = [];
 
 if(isset($_GET['content'])) {
     $content[] = ['block' => 'paver.example'];
+}
+
+if(isset($_GET['options-demo'])) {
+    $content[] = ['block' => 'paver.all-options'];
 }
 
 if(isset($_GET['columns'])) {

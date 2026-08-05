@@ -12,6 +12,8 @@ abstract class Option
 
     public string $wrapper = '_INJECT_';
 
+    public mixed $default = '';
+
     /**
      * When set, a `paver:option-init` event is dispatched for this option
      * once it has been rendered into the sidebar, carrying this type so
