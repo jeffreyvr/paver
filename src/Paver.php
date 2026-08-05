@@ -223,6 +223,10 @@ class Paver
             $block['instance']->beforeEditorRender();
         }
 
+        $config = array_merge([
+            'debug' => $this->debug,
+        ], $config);
+
         $data = [
             'content' => addslashes(json_encode($content)),
 
@@ -231,9 +235,8 @@ class Paver
                 'api' => paver()->api(),
             ]))->render(),
 
-            'config' => array_merge([
-                'debug' => $this->debug,
-            ], $config),
+            'config' => $config,
+            'sidebarTeleport' => $config['sidebarTeleport'] ?? null,
         ];
 
         return new View(paver()->viewPath().'editor.php', $data);

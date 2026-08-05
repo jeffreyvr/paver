@@ -123,6 +123,18 @@
         min-width: 300px;
         flex-shrink: 0;
     }
+
+    &.docked {
+        .sidebar {
+            min-width: 0;
+            width: 100%;
+            border-left: none;
+        }
+
+        .resizer {
+            display: none;
+        }
+    }
 }
 
 .editor, .iframe-wrapper {

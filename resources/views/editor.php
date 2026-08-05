@@ -1,5 +1,9 @@
+<?php
+$sidebarTeleport = $sidebarTeleport ?? null;
+$docked = is_string($sidebarTeleport) && $sidebarTeleport !== '';
+?>
 <div
-    class="paver__container"
+    class="paver__container<?php echo $docked ? ' paver__docked' : ''; ?>"
     x-cloak
     x-data="Paver({
         view: 'desktop',
@@ -27,7 +31,15 @@
         </div>
     </div>
 
+    <?php if ($docked): ?>
+    <template x-teleport="<?php echo htmlspecialchars($sidebarTeleport, ENT_QUOTES, 'UTF-8'); ?>">
+    <?php endif; ?>
+
     <?php echo new \Jeffreyvr\Paver\View(paver()->viewPath().'editor/sidebar.php'); ?>
+
+    <?php if ($docked): ?>
+    </template>
+    <?php endif; ?>
 
     <input type="hidden" name="paver_editor_content" x-model="content">
 </div>
