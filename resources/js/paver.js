@@ -220,32 +220,42 @@ window.Paver = function (data) {
 
             this.listeners()
 
-            this.determineVisibleInsertableBlocks()
-
             this.watchers()
 
             Shortcuts.revert(() => this.revert())
             Shortcuts.expand(() => this.toggleExpand())
             Shortcuts.exit(() => this.handleEscape())
 
-            if (this.$refs.blocksInserter) {
-                Sortable.create(this.$refs.blocksInserter, {
-                    ghostClass: "paver__sortable-ghost",
-                    chosenClass: "paver__sortable-chosen",
-                    dragClass: "paver__sortable-drag",
-                    group: {
-                        name: 'shared',
-                        pull: 'clone',
-                        put: false,
-                        revertClone: false
-                    },
-                    sort: false,
-                    animation: 150,
-                    onStart: (evt) => {
-                        evt.clone.setAttribute('x-ignore', '')
-                    },
-                })
+            // x-teleport runs after init, so inserter refs are not ready yet
+            // when the sidebar is docked outside the container.
+            this.$nextTick(() => this.initBlockInserter())
+        },
+
+        initBlockInserter() {
+            if (! this.$refs.blocksInserter || this._blockInserterReady) {
+                return
             }
+
+            this._blockInserterReady = true
+
+            this.determineVisibleInsertableBlocks()
+
+            Sortable.create(this.$refs.blocksInserter, {
+                ghostClass: "paver__sortable-ghost",
+                chosenClass: "paver__sortable-chosen",
+                dragClass: "paver__sortable-drag",
+                group: {
+                    name: 'shared',
+                    pull: 'clone',
+                    put: false,
+                    revertClone: false
+                },
+                sort: false,
+                animation: 150,
+                onStart: (evt) => {
+                    evt.clone.setAttribute('x-ignore', '')
+                },
+            })
         },
 
         listeners() {
