@@ -41,7 +41,10 @@ paver()->frame->activate();
     </script>
 
     <script>
-        window.__paver_start_alpine = <?php echo paver()->alpine ? 'true' : 'false'; ?>;
+        // Frame is a separate document; always boot its Alpine bundle.
+        // `paver()->alpine` flag only controls the outer editor shell (e.g.
+        // deferred start for a teleported sidebar) and must not silence here.
+        window.__paver_start_alpine = true;
 
         <?php echo paver()->loadAssetContent('/js/frame.js'); ?>
     </script>
